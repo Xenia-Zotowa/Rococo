@@ -1,0 +1,565 @@
+openapi: 3.0.0
+info:
+  title: Art Gallery API
+  description: API для управления информацией о художниках, картинах, музеях и странах.
+  version: 1.0.0
+servers:
+  - url: /api
+    description: Базовый путь API
+
+paths:
+  /artist:
+    get:
+      summary: Получить список художников
+      description: Возвращает пагинированный список художников. Поддерживает фильтрацию по имени.
+      parameters:
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 18
+          description: Количество элементов на странице
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+          description: Номер страницы (начиная с 0)
+        - name: name
+          in: query
+          schema:
+            type: string
+          description: Фильтр по имени художника (частичное совпадение)
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtistPageResponse'
+    patch:
+      summary: Частичное обновление художника
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArtistPatch'
+      responses:
+        '200':
+          description: Успешное обновление
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Artist'
+
+  /artist/{id}:
+    get:
+      summary: Получить художника по ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Artist'
+
+  /museum:
+    get:
+      summary: Получить список музеев
+      parameters:
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 4
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: title
+          in: query
+          schema:
+            type: string
+          description: Фильтр по названию музея
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MuseumPageResponse'
+    patch:
+      summary: Частичное обновление музея
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MuseumPatch'
+      responses:
+        '200':
+          description: Успешное обновление
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Museum'
+
+  /museum/{id}:
+    get:
+      summary: Получить музей по ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Museum'
+
+  /painting:
+    get:
+      summary: Получить список картин
+      parameters:
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 9
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaintingPageResponse'
+    patch:
+      summary: Частичное обновление картины
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaintingPatch'
+      responses:
+        '200':
+          description: Успешное обновление
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Painting'
+
+  /painting/{id}:
+    get:
+      summary: Получить картину по ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Painting'
+
+  /painting/by-artist/{artistId}:
+    get:
+      summary: Получить картины по ID художника
+      parameters:
+        - name: artistId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Painting'
+
+  /country:
+    get:
+      summary: Получить список стран
+      parameters:
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountryPageResponse'
+
+  /user:
+    get:
+      summary: Получить информацию о текущем пользователе
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    patch:
+      summary: Частичное обновление пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPatch'
+      responses:
+        '200':
+          description: Успешное обновление
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /session:
+    get:
+      summary: Получить информацию о текущей сессии
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+
+components:
+  schemas:
+    Country:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+      required:
+        - id
+        - name
+
+    Geo:
+      type: object
+      properties:
+        city:
+          type: string
+        country:
+          $ref: '#/components/schemas/Country'
+      required:
+        - city
+        - country
+
+    Museum:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        photo:
+          type: string
+          description: Фотография музея в формате base64
+        geo:
+          $ref: '#/components/schemas/Geo'
+      required:
+        - id
+        - title
+        - description
+        - photo
+        - geo
+
+    Artist:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        biography:
+          type: string
+        photo:
+          type: string
+          description: Фотография художника в формате base64
+      required:
+        - id
+        - name
+        - biography
+        - photo
+
+    Painting:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        content:
+          type: string
+          description: Изображение картины в формате base64
+        museum:
+          $ref: '#/components/schemas/Museum'
+      required:
+        - id
+        - title
+        - description
+        - content
+        - museum
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        email:
+          type: string
+        # другие поля из примера не приведены, добавим базовые
+      required:
+        - id
+        - username
+
+    Session:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+
+    # Пагинированные ответы
+    Pageable:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+        sort:
+          type: object
+          properties:
+            empty:
+              type: boolean
+            sorted:
+              type: boolean
+            unsorted:
+              type: boolean
+        offset:
+          type: integer
+        paged:
+          type: boolean
+        unpaged:
+          type: boolean
+
+    ArtistPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Artist'
+        pageable:
+          $ref: '#/components/schemas/Pageable'
+        last:
+          type: boolean
+        totalPages:
+          type: integer
+        totalElements:
+          type: integer
+        number:
+          type: integer
+        sort:
+          type: object
+        first:
+          type: boolean
+        size:
+          type: integer
+        numberOfElements:
+          type: integer
+        empty:
+          type: boolean
+
+    MuseumPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Museum'
+        pageable:
+          $ref: '#/components/schemas/Pageable'
+        last:
+          type: boolean
+        totalPages:
+          type: integer
+        totalElements:
+          type: integer
+        number:
+          type: integer
+        sort:
+          type: object
+        first:
+          type: boolean
+        size:
+          type: integer
+        numberOfElements:
+          type: integer
+        empty:
+          type: boolean
+
+    CountryPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Country'
+        pageable:
+          $ref: '#/components/schemas/Pageable'
+        last:
+          type: boolean
+        totalPages:
+          type: integer
+        totalElements:
+          type: integer
+        number:
+          type: integer
+        sort:
+          type: object
+        first:
+          type: boolean
+        size:
+          type: integer
+        numberOfElements:
+          type: integer
+        empty:
+          type: boolean
+
+    PaintingPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Painting'
+        pageable:
+          $ref: '#/components/schemas/Pageable'
+        last:
+          type: boolean
+        totalPages:
+          type: integer
+        totalElements:
+          type: integer
+        number:
+          type: integer
+        sort:
+          type: object
+        first:
+          type: boolean
+        size:
+          type: integer
+        numberOfElements:
+          type: integer
+        empty:
+          type: boolean
+
+    # Patch схемы (частичное обновление)
+    ArtistPatch:
+      type: object
+      properties:
+        name:
+          type: string
+        biography:
+          type: string
+        photo:
+          type: string
+
+    MuseumPatch:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        photo:
+          type: string
+        geo:
+          $ref: '#/components/schemas/Geo'
+
+    PaintingPatch:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        content:
+          type: string
+        museumId:
+          type: string
+          format: uuid
+
+    UserPatch:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string

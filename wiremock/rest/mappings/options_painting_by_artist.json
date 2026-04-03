@@ -17,7 +17,7 @@
           "Access-Control-Allow-Credentials": "true",
           "Access-Control-Allow-Headers": "authorization, content-type",
           "Access-Control-Allow-Methods": "GET",
-          "Access-Control-Allow-Origin": "http://localhost:3000"
+          "Access-Control-Allow-Origin": "http://localhost:8080"
         }
       }
     },
@@ -38,7 +38,7 @@
           "Access-Control-Allow-Credentials": "true",
           "Access-Control-Allow-Headers": "authorization, content-type",
           "Access-Control-Allow-Methods": "GET",
-          "Access-Control-Allow-Origin": "http://localhost:3000"
+          "Access-Control-Allow-Origin": "http://localhost:8080"
         }
       }
     },
@@ -59,7 +59,7 @@
           "Access-Control-Allow-Credentials": "true",
           "Access-Control-Allow-Headers": "authorization, content-type",
           "Access-Control-Allow-Methods": "GET",
-          "Access-Control-Allow-Origin": "http://localhost:3000"
+          "Access-Control-Allow-Origin": "http://localhost:8080"
         }
       }
     }

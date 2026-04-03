@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 9001
 
 spring:
   application:
@@ -10,16 +10,17 @@ spring:
         jwt:
           issuer-uri: 'http://localhost:9000'
   datasource:
-    url: 'jdbc:mysql://localhost:3306/rococo-gateway?serverTimezone=UTC&createDatabaseIfNotExist=true'
+    url: ${GATEWAY_DB_URL:jdbc:mysql://localhost:3306/rococo-gateway?serverTimezone=UTC&createDatabaseIfNotExist=true}
     hikari:
       connection-timeout: 20000
       minimum-idle: 10
       maximum-pool-size: 30
-      idle-timeout: 10000
-      max-lifetime: 1000
+      idle-timeout: 300000
+      max-idle-time: 300000
+      max-lifetime: 60000
       auto-commit: true
-    username: root
-    password: secret
+    username: ${GATEWAY_DB_USER}
+    password: ${GATEWAY_DB_PASSWORD}
   flyway:
     enabled: true
     baseline-on-migrate: true
@@ -47,4 +48,4 @@ logging:
     org.springframework.security.oauth2: DEBUG
 
 rococo-front:
-  base-uri: 'http://localhost:3000'
+  base-uri: 'http://localhost:9001'
