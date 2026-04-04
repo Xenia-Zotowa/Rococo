@@ -1,7 +1,7 @@
 buildscript {
     ext {
-        junitVersion = '5.13.4'
-        allureVersion = '2.30.0'
+        junitVersion = '5.10.3'
+        allureVersion = '2.26.0'
         selenideVersion = '7.10.1'
         okhttp3Version = '5.1.0'
         retrofitVersion = '3.0.0'
@@ -34,47 +34,53 @@ buildscript {
 }
 
 plugins {
-    id 'io.qameta.allure' version '2.11.2' // Исправленная версия плагина
-    id 'com.github.edeandrea.xjc-generation' version '1.6'
+//    id 'io.qameta.allure' version '3.0.1'
+    // id 'com.github.edeandrea.xjc-generation' version '1.6'  // ПОЛНОСТЬЮ ЗАКОММЕНТИРУЙТЕ
 }
 
 group = 'guru.qa'
 version = '2.1.4'
 
-allure {
-    version.set("${allureVersion}")
-    adapter {
-        aspectjVersion.set("1.9.22")
-        aspectjWeaver.set(true)
-    }
-}
+//allure {
+//    version.set("${allureVersion}")
+//    adapter {
+//        aspectjVersion.set("1.9.22")
+//        aspectjWeaver.set(true)
+//    }
+//}
 
-xjcGeneration {
-    defaultAdditionalXjcOptions = ['encoding': 'UTF-8']
-    schemas {
-        wsdlSchema {
-            schemaFile = 'userdata.wsdl'
-            javaPackageName = 'jaxb.userdata'
-            sourceSet = 'test'
-        }
-    }
-}
+// ПОЛНОСТЬЮ УДАЛИТЕ ИЛИ ЗАКОММЕНТИРУЙТЕ ВЕСЬ БЛОК xjcGeneration
+// xjcGeneration {
+//     defaultAdditionalXjcOptions = ['encoding': 'UTF-8']
+//     schemas {
+//         wsdlSchema {
+//             schemaFile = 'userdata.wsdl'
+//             javaPackageName = 'jaxb.userdata'
+//             sourceSet = 'test'
+//         }
+//     }
+// }
 
 sourceSets {
     test {
         java {
             srcDir('src/test/java')
-            srcDir("$buildDir/generated-sources/test/xjc")
+            // srcDir("$buildDir/generated-sources/test/xjc")  // ЗАКОММЕНТИРУЙТЕ
         }
     }
 }
+
+
 
 dependencies {
     // Logs
     testImplementation "ch.qos.logback:logback-classic:${logbackVersion}"
     testImplementation "org.slf4j:slf4j-api:${slf4jVersion}"
-    // JUnit
+
+    // JUnit 5
     testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+
     // REST
     testImplementation "com.squareup.okhttp3:logging-interceptor:${okhttp3Version}"
     testImplementation "com.squareup.okhttp3:okhttp-urlconnection:${okhttp3Version}"
@@ -86,25 +92,30 @@ dependencies {
         exclude group: "com.squareup.okhttp3"
     }
     testImplementation "org.springframework.data:spring-data-commons:${springDataCommonsVersion}"
+
     // DB
     testImplementation "org.springframework:spring-jdbc:${springJdbcVersion}"
     testImplementation "org.postgresql:postgresql:${project.ext.postgresDriverVersion}"
     testImplementation "p6spy:p6spy:${p6spyVersion}"
     testImplementation "org.hibernate:hibernate-core:${hibernateVersion}"
     testImplementation "org.springframework.security:spring-security-crypto:${springCryptoVersion}"
+
     // Allure
     testImplementation "io.qameta.allure:allure-attachments:${allureVersion}"
     testImplementation("io.qameta.allure:allure-junit5:${allureVersion}") {
-        exclude group: "org.junit.jupiter"
+        exclude group: 'org.junit.jupiter'
+        exclude group: 'org.junit.platform'
     }
     testImplementation("io.qameta.allure:allure-selenide:${allureVersion}") {
         exclude group: 'com.codeborne'
     }
     testImplementation "io.qameta.allure:allure-okhttp3:${allureVersion}"
     testImplementation "io.qameta.allure:allure-grpc:${allureVersion}"
+
     // WEB
     testImplementation "com.codeborne:selenide:${selenideVersion}"
     testImplementation "ru.yandex.qatools.ashot:ashot:${ashotVersion}"
+
     // Utils
     testImplementation("com.github.javafaker:javafaker:${fakerVersion}") {
         exclude group: 'org.yaml'
@@ -114,7 +125,8 @@ dependencies {
     testImplementation 'com.github.vertical-blank:sql-formatter:2.0.5'
 
     // Wiremock
-    testImplementation "org.wiremock:wiremock:${project.ext.wiremockVersion}"
+//    testImplementation "org.wiremock:wiremock:${project.ext.wiremockVersion}"
+
     // Lombok
     testAnnotationProcessor "org.projectlombok:lombok:${project.ext.lombokVersion}"
     testCompileOnly "org.projectlombok:lombok:${project.ext.lombokVersion}"
@@ -124,6 +136,15 @@ dependencies {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "started", "passed", "skipped", "failed"
+        showStandardStreams = true
+    }
+    failOnNoDiscoveredTests = false
 }
 
 tasks.register('printVersion') {
