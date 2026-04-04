@@ -32,7 +32,7 @@ public class RegisterPage {
     }
 
     @Step("Проверка успешной регистрации")
-    public RegisterPage checRegister(){
+    public RegisterPage chekRegister(){
         sleep(50);
         formParagraphSuccess.shouldBe(visible)
                 .shouldHave(text("Добро пожаловать в Ro"));

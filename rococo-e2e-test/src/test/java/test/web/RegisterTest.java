@@ -14,26 +14,27 @@ import java.util.UUID;
 import static com.codeborne.selenide.Selenide.closeWebDriver;
 import static com.codeborne.selenide.Selenide.sleep;
 
-//
+
 @WebTest
 
 public class RegisterTest {
     private final Config CFG = Config.getInstance();
     private final String randomUsername = "user_" + UUID.randomUUID().toString().substring(0, 8);
+    private final MainPage mainPage = Selenide.open(CFG.spendUrl(), MainPage.class);
+    private final LoginPage loginPage = new LoginPage();
+    private final RegisterPage registerPage = new RegisterPage();
+
 
     @Test
     @DisplayName("Регистрация нового пользователя")
     public void registerNewUser() {
 
-        MainPage mainPage = Selenide.open(CFG.spendUrl(), MainPage.class);
         mainPage.switchingToTheAuthorizationForm();
         sleep(1000);
-        LoginPage loginPage = new LoginPage();
         loginPage.switchingToTheAuthorizationForm();
         sleep(1000);
-        RegisterPage registerPage = new RegisterPage();
-        registerPage.registerUser("randomUsername", "123", "123")
-                .checRegister();
+        registerPage.registerUser(randomUsername, "123", "123")
+                .chekRegister();
         closeWebDriver();
     }
 
@@ -41,13 +42,10 @@ public class RegisterTest {
     @DisplayName("Регистрация существующего пользователя")
     public void registeranAnExistingUser() {
 
-        MainPage mainPage = Selenide.open(CFG.spendUrl(), MainPage.class);
         mainPage.switchingToTheAuthorizationForm();
         sleep(1000);
-        LoginPage loginPage = new LoginPage();
         loginPage.switchingToTheAuthorizationForm();
         sleep(1000);
-        RegisterPage registerPage = new RegisterPage();
         registerPage.registerUser("admin", "123", "123")
                 .errorUsernameRegister();
         closeWebDriver();
@@ -57,14 +55,11 @@ public class RegisterTest {
     @DisplayName("Регистрация с несовпадающими паролями")
     public void registrationWithMismatchedPasswords() {
 
-        MainPage mainPage = Selenide.open(CFG.spendUrl(), MainPage.class);
         mainPage.switchingToTheAuthorizationForm();
         sleep(1000);
-        LoginPage loginPage = new LoginPage();
         loginPage.switchingToTheAuthorizationForm();
         sleep(1000);
-        RegisterPage registerPage = new RegisterPage();
-        registerPage.registerUser("randomUsername", "123", "321")
+        registerPage.registerUser(randomUsername, "123", "321")
                 .errorPasswordRegister();
         closeWebDriver();
     }
