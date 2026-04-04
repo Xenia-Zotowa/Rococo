@@ -1,0 +1,105 @@
+services:
+  auth-rococo-db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=$AUTH_DB_PASSWORD
+      - MYSQL_USER=$AUTH_DB_USER
+      - MYSQL_PASSWORD=$AUTH_DB_PASSWORD
+      - MYSQL_DATABASE=$AUTH_DB_NAME
+    ports:
+      - "3306:3306"
+    volumes:
+      - rococo_auth_db_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "$AUTH_DB_USER", "-p$AUTH_DB_PASSWORD", "--silent" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    networks:
+      - rococo-network
+
+  gateway-rococo-db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=$GATEWAY_DB_PASSWORD
+      - MYSQL_USER=$GATEWAY_DB_USER
+      - MYSQL_PASSWORD=$GATEWAY_DB_PASSWORD
+      - MYSQL_DATABASE=$GATEWAY_DB_NAME
+    ports:
+      - "3307:3306"
+    volumes:
+      - rococo_gateway_db_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "$GATEWAY_DB_USER", "-p$GATEWAY_DB_PASSWORD", "--silent" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    networks:
+      - rococo-network
+
+  rococo-auth:
+    build:
+      context: ../rococo-auth
+      dockerfile: Dockerfile
+    ports:
+      - "9000:9000"
+    environment:
+      - AUTH_DB_URL=jdbc:mysql://auth-rococo-db:3306/$AUTH_DB_NAME?serverTimezone=UTC&createDatabaseIfNotExist=true
+      - AUTH_DB_USER=$AUTH_DB_USER
+      - AUTH_DB_PASSWORD=$AUTH_DB_PASSWORD
+      - AUTH_DB_NAME=$AUTH_DB_NAME
+    depends_on:
+      auth-rococo-db:
+        condition: service_healthy
+    networks:
+      - rococo-network
+
+  rococo-gateway-wiremock:
+    image: wiremock/wiremock:2.35.0
+    restart: always
+    ports:
+      - "9001:8080"
+    volumes:
+      - ../wiremock/rest:/home/wiremock
+    command: [ "--global-response-templating", "--enable-stub-cors" ]
+    networks:
+      - rococo-network
+
+  #  rococo-gateway:
+  #    build:
+  #      context: ../rococo-gateway
+  #      dockerfile: Dockerfile
+  #    ports:
+  #      - "9001:9001"
+  #    environment:
+  #      - GATEWAY_DB_URL=jdbc:mysql://gateway-rococo-db:3306/$GATEWAY_DB_NAME?serverTimezone=UTC&createDatabaseIfNotExist=true
+  #      - GATEWAY_DB_USER=$GATEWAY_DB_USER
+  #      - GATEWAY_DB_PASSWORD=$GATEWAY_DB_PASSWORD
+  #      - GATEWAY_DB_NAME=$GATEWAY_DB_NAME
+  #      - ROCOCO_FRONT_BASE_URI=http://localhost:8080
+  #    depends_on:
+  #      gateway-rococo-db:
+  #        condition: service_healthy
+  #    networks:
+  #      - rococo-network
+
+  rococo-client:
+    build:
+      context: ../rococo-client
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    networks:
+      - rococo-network
+
+networks:
+  rococo-network:
+    name: rococo-network
+
+volumes:
+  rococo_auth_db_data:
+  rococo_gateway_db_data:
