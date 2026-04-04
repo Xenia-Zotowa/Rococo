@@ -44,6 +44,17 @@ public class LoginTest {
 
         closeWebDriver();
     }
+    @Test
+    @DisplayName("Авторизация с неверным паролем")
+    public void chekErrorPassword() {
+
+        mainPage.switchingToTheAuthorizationForm();
+        sleep(1000);
+        loginPage.loginErrorTest("admin", "321")
+                .chekLoginErrorTest ();
+
+        closeWebDriver();
+    }
 
 
     @Test
