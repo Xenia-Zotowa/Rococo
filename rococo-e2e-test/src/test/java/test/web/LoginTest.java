@@ -28,7 +28,7 @@ public class LoginTest {
         mainPage.switchingToTheAuthorizationForm();
         sleep(1000);
         loginPage.loginTest("admin", "123");
-        mainPage.chekBackHome();
+        mainPage.checkBackHome();
 
         closeWebDriver();
     }
@@ -40,7 +40,7 @@ public class LoginTest {
         mainPage.switchingToTheAuthorizationForm();
         sleep(1000);
         loginPage.loginErrorTest(randomUsername, "123")
-                .chekLoginErrorTest ();
+                .checkLoginErrorTest ();
 
         closeWebDriver();
     }
@@ -51,7 +51,7 @@ public class LoginTest {
         mainPage.switchingToTheAuthorizationForm();
         sleep(1000);
         loginPage.loginErrorTest("admin", "321")
-                .chekLoginErrorTest ();
+                .checkLoginErrorTest ();
 
         closeWebDriver();
     }
@@ -63,7 +63,7 @@ public class LoginTest {
 
         mainPage.switchingToTheAuthorizationForm();
         sleep(1000);
-        loginPage.chekVisiblePassword ("123");
+        loginPage.checkVisiblePassword ("123");
 
         closeWebDriver();
     }

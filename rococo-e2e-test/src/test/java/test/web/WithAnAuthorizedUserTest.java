@@ -22,9 +22,19 @@ public class WithAnAuthorizedUserTest {
         mainPage.switchingToTheAuthorizationForm();
         sleep(1000);
         loginPage.loginTest("admin", "123");
-        mainPage.chekBackHome()
+        mainPage.checkBackHome()
                 .paintingSection()
                 .addAPicture();
+    }
+    @Test
+    @DisplayName("Проверка разлогинивания")
+    public void cheklogOut(){
+        mainPage.switchingToTheAuthorizationForm();
+        sleep(1000);
+        loginPage.loginTest("admin", "123");
+        mainPage.checkBackHome()
+                .logOut()
+                .сheckingTheVisibilityOfTheLoginButton();
     }
 
 }

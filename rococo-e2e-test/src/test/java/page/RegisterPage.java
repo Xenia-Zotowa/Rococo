@@ -32,7 +32,7 @@ public class RegisterPage {
     }
 
     @Step("Проверка успешной регистрации")
-    public RegisterPage chekRegister(){
+    public RegisterPage checkRegister(){
         sleep(50);
         formParagraphSuccess.shouldBe(visible)
                 .shouldHave(text("Добро пожаловать в Ro"));
@@ -41,7 +41,7 @@ public class RegisterPage {
     }
 
     @Step("Проверка ошибки регистрации существующего пользователя")
-    public RegisterPage errorUsernameRegister(){
+    public RegisterPage erroreUsernameRegister(){
         sleep(50);
         errorUsername.shouldBe(visible)
                 .shouldHave(text("already exists"));
@@ -49,7 +49,7 @@ public class RegisterPage {
     }
 
     @Step("Проверка ошибки регистрации с несовпадающими паролями")
-    public RegisterPage errorPasswordRegister(){
+    public RegisterPage errorePasswordRegister(){
         sleep(50);
         errorPassword.shouldBe(visible)
                 .shouldHave(text("Passwords should be equal"));

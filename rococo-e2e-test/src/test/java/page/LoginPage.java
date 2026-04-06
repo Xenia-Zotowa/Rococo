@@ -40,7 +40,7 @@ public class LoginPage {
 
 
     @Step("Проверка ошибки авторизации с неправильным логином")
-    public LoginPage chekLoginErrorTest (){
+    public LoginPage checkLoginErrorTest (){
         errorLogin.shouldBe(visible)
                 .shouldHave(text("Неверные учетные данные пользователя"));
         return this;
@@ -48,7 +48,7 @@ public class LoginPage {
 
 
     @Step("Проверка видимости пароля")
-    public LoginPage chekVisiblePassword (String password){
+    public LoginPage checkVisiblePassword (String password){
         passwordInput.val(password);
         visibleButton.click();
         return this;

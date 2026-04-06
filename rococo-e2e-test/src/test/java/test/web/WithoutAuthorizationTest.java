@@ -5,10 +5,7 @@ import config.Config;
 import jupiter.annotation.meta.WebTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import page.LoginPage;
 import page.MainPage;
-
-import static com.codeborne.selenide.Selenide.sleep;
 
 @WebTest
 public class WithoutAuthorizationTest {
@@ -20,17 +17,38 @@ public class WithoutAuthorizationTest {
     @DisplayName("Проверка невозможности добавления картинки без авторизации")
     public void checkingIfItIsImpossibleToAddAnImageWithoutAuthorization(){
 
-        mainPage.chekBackHome()
+        mainPage.checkBackHome()
                 .paintingSection()
-                .chekAddAPicture();
+                .checkAddAPicture();
     }
 
     @Test
     @DisplayName("Проверка невозможности добавления художника без авторизации")
     public void checkingIfItIsImpossibleToAddAnArtistWithoutAuthorization(){
 
-        mainPage.chekBackHome()
-                .chekAddAArtist()
-                .chekAddAArtist();
+        mainPage.checkBackHome()
+                .artistSection()
+                .checkAddAArtist();
+    }
+
+    @Test
+    @DisplayName("Проверка невозможности добавления музея без авторизации")
+    public void checkingIfItIsImpossibleToAddAnMuseumWithoutAuthorization(){
+
+        mainPage.checkBackHome()
+                .museumSection()
+                .checkAddAMuseum();
+    }
+
+    @Test
+    @DisplayName("Проверка переключения тогла")
+    public void checkingtheToggleSwitch(){
+
+        mainPage.checkBackHome()
+                .switchingToggle()
+                .checkToggleDark()
+                .switchingToggle()
+                .checkToggleLight()
+                .switchingToggle();
     }
 }

@@ -34,7 +34,7 @@ public class RegisterTest {
         loginPage.switchingToTheAuthorizationForm();
         sleep(1000);
         registerPage.registerUser(randomUsername, "123", "123")
-                .chekRegister();
+                .checkRegister();
         closeWebDriver();
     }
 
@@ -47,7 +47,7 @@ public class RegisterTest {
         loginPage.switchingToTheAuthorizationForm();
         sleep(1000);
         registerPage.registerUser("admin", "123", "123")
-                .errorUsernameRegister();
+                .erroreUsernameRegister();
         closeWebDriver();
     }
 
@@ -60,7 +60,7 @@ public class RegisterTest {
         loginPage.switchingToTheAuthorizationForm();
         sleep(1000);
         registerPage.registerUser(randomUsername, "123", "321")
-                .errorPasswordRegister();
+                .errorePasswordRegister();
         closeWebDriver();
     }
 
