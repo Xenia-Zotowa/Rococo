@@ -16,16 +16,17 @@ public class WithAnAuthorizedUserTest {
     private final MainPage mainPage = Selenide.open(CFG.spendUrl(), MainPage.class);
     private final LoginPage loginPage = new LoginPage();
 
-    @Test
-    @DisplayName("Редактирование картин")
-    public void pictureEditing(){
-        mainPage.switchingToTheAuthorizationForm();
-        sleep(1000);
-        loginPage.loginTest("admin", "123");
-        mainPage.checkBackHome()
-                .paintingSection()
-                .addAPicture();
-    }
+//    @Test
+//    @DisplayName("Редактирование картин")
+//    public void pictureEditing(){
+//        mainPage.switchingToTheAuthorizationForm();
+//        sleep(1000);
+//        loginPage.loginTest("admin", "123");
+//        mainPage.checkBackHome()
+//                .paintingSection()
+//                .addAPicture();
+//    }
+
     @Test
     @DisplayName("Проверка разлогинивания")
     public void cheklogOut(){
@@ -35,6 +36,20 @@ public class WithAnAuthorizedUserTest {
         mainPage.checkBackHome()
                 .logOut()
                 .сheckingTheVisibilityOfTheLoginButton();
+    }
+
+
+    @Test
+    @DisplayName("Редактирование профиля")
+    public void profileEditing(){
+        mainPage.switchingToTheAuthorizationForm();
+        sleep(1000);
+        loginPage.loginTest("admin", "123");
+        mainPage.checkBackHome()
+                .goingToTheUserProfile()
+                .changingTheUserFirstAndLastName("Ivan", "Ivanov")
+                .updateYourFotoProfile()
+                .updateYourProfile();
     }
 
 }

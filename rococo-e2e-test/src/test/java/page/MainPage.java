@@ -5,6 +5,7 @@ import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.*;
+import java.io.File;
 
 public class MainPage {
     private final SelenideElement enterButton = $x("//button[text()='Войти']");
@@ -21,6 +22,10 @@ public class MainPage {
     private final SelenideElement toggleDark = $("[title='Toggle Dark Mode']");
     private final SelenideElement avatar = $(".avatar");
     private final SelenideElement exitButton = $(".btn.variant-ghost");
+    private final SelenideElement firstnameInput = $("input[name='firstname']");
+    private final SelenideElement surnameInput = $("input[name='surname']");
+    private final SelenideElement updatProfile = $(".btn.variant-filled-primary");
+    private final SelenideElement fotoProfile = $("input[name='content']");
 
 
     @Step("Переход в форму авторизации")
@@ -109,9 +114,40 @@ public class MainPage {
         return this;
     }
 
+
+    @Step("Изменении имени и фамилии пользователя")
+    public MainPage changingTheUserFirstAndLastName(String firstname, String surname){
+        firstnameInput.clear();
+        firstnameInput.setValue(firstname);
+        surnameInput.clear();
+        surnameInput.setValue(surname);
+        return this;
+    }
+
+
+    @Step("Переход в профиль пользователя")
+    public MainPage goingToTheUserProfile(){
+        avatar.click();
+        return this;
+    }
+
     @Step("Проверка видимости кнопки войти")
     public MainPage сheckingTheVisibilityOfTheLoginButton(){
         enterButton.shouldBe(visible).shouldHave(text("Войти"));
+        return this;
+    }
+
+    @Step("Обновление профиля")
+    public MainPage updateYourProfile(){
+        updatProfile.click();
+        return this;
+    }
+
+    @Step("Обновление аватарки профиля")
+    public MainPage updateYourFotoProfile(){
+        File imageFile = new File("src/test/resources/images/kapi.jpg");
+        fotoProfile.uploadFile(imageFile);
+
         return this;
     }
 }
