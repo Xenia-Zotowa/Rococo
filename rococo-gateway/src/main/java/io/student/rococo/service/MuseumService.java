@@ -82,16 +82,16 @@ public class MuseumService {
 
     private MuseumDTO toDTO(MuseumEntity museum) {
         var geo = museum.getCity() != null || museum.getCountry() != null
-                ? GeoDTO.builder()
-                .city(museum.getCity())
-                .country(museum.getCountry() != null
-                        ? io.student.rococo.dto.CountryDTO.builder()
-                        .id(museum.getCountry().getId())
-                        .name(museum.getCountry().getName())
-                        .build()
-                        : null)
-                .build()
+                ? new GeoDTO(museum.getCity(), null, null, null)
                 : null;
+
+        if (geo != null && museum.getCountry() != null) {
+            geo.setCountry(io.student.rococo.dto.CountryDTO.builder()
+                    .id(museum.getCountry().getId())
+                    .name(museum.getCountry().getName())
+                    .build());
+        }
+
 
         return MuseumDTO.builder()
                 .id(museum.getId())

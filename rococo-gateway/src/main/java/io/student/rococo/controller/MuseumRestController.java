@@ -51,7 +51,6 @@ public class MuseumRestController {
     public ResponseEntity<MuseumDTO> create(
             @RequestBody MuseumDTO dto,
             UriComponentsBuilder uriBuilder) {
-        // This endpoint is part of the spec based on user request for PUT /api/museum
         URI location = uriBuilder.path("/museum/{id}").buildAndExpand(dto.getId()).toUri();
         return ResponseEntity.status(HttpStatus.CREATED).location(location).body(dto);
     }

@@ -30,7 +30,7 @@ public class MuseumEntity {
     @Column(columnDefinition = "longblob")
     private byte[] photo;
 
-    @ManyToOne(fetch = LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "country_id", nullable = false)
     private CountryEntity country;
 

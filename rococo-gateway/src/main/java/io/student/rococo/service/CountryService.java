@@ -21,16 +21,16 @@ public class CountryService {
 
     public PageableResponse<CountryDTO> getList(Pageable pageable, String title) {
         var countries = countryRepository.findAllOrdered(pageable);
-        var dtos = countries.getContent().stream()
+        var dtos = countries.stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
         return new PageableResponse<>(dtos,
-                countries.getNumber(),
-                countries.getSize(),
-                countries.getTotalElements(),
-                countries.getTotalPages(),
-                countries.isLast(),
-                countries.isFirst());
+                0,
+                countries.size(),
+                countries.size(),
+                1,
+                true,
+                true);
     }
 
     private CountryDTO toDTO(CountryEntity country) {

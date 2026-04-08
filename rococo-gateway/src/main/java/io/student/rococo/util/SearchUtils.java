@@ -9,7 +9,7 @@ public class SearchUtils {
     public static Pageable createPageable(Map<String, String> params) {
         int size = Integer.parseInt(params.getOrDefault("size", "18"));
         int page = Integer.parseInt(params.getOrDefault("page", "0"));
-        return Pageable.of(page, size);
+        return Pageable.unpaged();
     }
 
     public static boolean containsIgnoreCase(String text, String query) {

@@ -5,7 +5,7 @@ import io.student.rococo.data.repository.PaintingRepository;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.HttpMessageNotReadableException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -57,14 +57,16 @@ public class PaintingService {
     }
 
     @Transactional
-    public io.student.rococo.data.PaintingEntity updatePainting(io.student.rococo.dto.PaintingDTO painting) {
-        PaintingEntity entity = paintingRepository.findById(painting.getId())
+    public io.student.rococo.dto.PaintingDTO updatePainting(java.util.UUID id, io.student.rococo.dto.PaintingPatchDTO patch) {
+        PaintingEntity entity = paintingRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Painting not found"));
-        if (painting.getTitle() != null) entity.setTitle(painting.getTitle());
-        if (painting.getDescription() != null) entity.setDescription(painting.getDescription());
-        if (painting.getContent() != null) entity.setContent(painting.getContent());
-        return paintingRepository.save(entity);
+        if (patch.getTitle() != null) entity.setTitle(patch.getTitle());
+        if (patch.getDescription() != null) entity.setDescription(patch.getDescription());
+        if (patch.getContent() != null) entity.setContent(patch.getContent());
+        var updated = paintingRepository.save(entity);
+        return toDTO(updated);
     }
+
 
     private io.student.rococo.dto.PaintingDTO toDTO(io.student.rococo.data.PaintingEntity entity) {
         try {

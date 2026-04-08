@@ -14,7 +14,7 @@ public class PageableMapper {
     public static Pageable fromQueryParams(Map<String, String> queryParams) {
         int size = Integer.parseInt(queryParams.getOrDefault("size", "10"));
         int pageNumber = Integer.parseInt(queryParams.getOrDefault("page", "0"));
-        return Pageable.of(pageNumber, size, Sort.unsorted());
+        return Pageable.unpaged();
     }
 
     public static <T> T fill(T instance, Map<String, String> params) {

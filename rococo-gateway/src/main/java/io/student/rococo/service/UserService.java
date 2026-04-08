@@ -2,6 +2,7 @@ package io.student.rococo.service;
 
 import io.student.rococo.data.UserEntity;
 import io.student.rococo.data.repository.UserRepository;
+import io.student.rococo.dto.UserDTO;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,7 @@ public class UserService {
         String email = jwt.getClaimAsString("email");
         if (email != null) {
             builder.email(email);
-            builder.emailVerified(String.valueOf(jwt.getClaimAsStringBit("email_verified", false)));
+            builder.emailVerified(String.valueOf(jwt.getClaim("email_verified")));
         }
 
         return builder.build();

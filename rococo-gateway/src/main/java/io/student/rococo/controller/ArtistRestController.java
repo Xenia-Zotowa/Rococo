@@ -53,7 +53,6 @@ public class ArtistRestController {
     public ResponseEntity<ArtistDTO> updateArtistList(
             Pageable pageable,
             @RequestParam(required = false) String name) {
-        // Simulating PUT semantics per OpenAPI spec for /api/artist
         List<ArtistDTO> result = artistService.getList(pageable, name).getContent();
         if (result.isEmpty()) {
             return ResponseEntity.ok().build();

@@ -4,6 +4,7 @@ import io.student.rococo.dto.PageableResponse;
 import io.student.rococo.service.PaintingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,7 +48,7 @@ public class PaintingRestController {
         if (patch.getTitle() != null) painting.setTitle(patch.getTitle());
         if (patch.getDescription() != null) painting.setDescription(patch.getDescription());
         if (patch.getContent() != null) painting.setContent(patch.getContent());
-        var updated = paintingService.updatePainting(painting);
+        var updated = paintingService.updatePainting(id, patch);
         return ResponseEntity.ok(updated);
     }
 

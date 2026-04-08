@@ -14,7 +14,7 @@ public class MuseumIdMustExistValidator implements ConstraintValidator<MuseumIdM
     public boolean isValid(Long value, ConstraintValidatorContext context) {
         if (value == null) return true;
         try {
-            return paintingRepository.existsById(value.longValue());
+            return paintingRepository.existsById(java.util.UUID.fromString(value.toString()));
         } catch (Exception e) {
             return false;
         }

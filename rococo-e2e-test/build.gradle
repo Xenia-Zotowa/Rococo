@@ -1,76 +1,53 @@
-buildscript {
-    ext {
-        junitVersion = '5.10.3'
-        allureVersion = '2.26.0'
-        selenideVersion = '7.10.1'
-        okhttp3Version = '5.1.0'
-        retrofitVersion = '3.0.0'
-        apollographqlVersion = '0.0.2'
-        logbackVersion = '1.5.18'
-        slf4jVersion = '2.0.17'
-        springJdbcVersion = '6.2.11'
-        springCryptoVersion = '6.5.5'
-        p6spyVersion = '3.9.1'
-        hibernateVersion = '7.1.1.Final'
-        kafkaClientsVersion = '4.1.0'
-        saajVersion = '3.0.4'
-        springDataCommonsVersion = '3.5.4'
-        wiremockVersion = '3.13.1'
-        ashotVersion = '1.5.4'
-        fakerVersion = '1.0.2'
-        jakartaJaxbVersion = '4.0.0'
-        postgresDriverVersion = '42.7.4'
-        grpcVersion = '1.70.0'
-        protobufVersion = '3.25.5'
-        lombokVersion = '1.18.34'
-
-        userdataWsdlUrl = System.getProperty("test.env") == "docker"
-                ? "http://userdata.niffler.dc:8089/ws/userdata.wsdl"
-                : "http://localhost:8089/ws/userdata.wsdl"
-        gatewayGraphqlUrl = System.getProperty("test.env") == "docker"
-                ? "http://gateway.niffler.dc:8090/graphql"
-                : "http://localhost:8090/graphql"
-    }
-}
-
 plugins {
-//    id 'io.qameta.allure' version '3.0.1'
-    // id 'com.github.edeandrea.xjc-generation' version '1.6'  // ПОЛНОСТЬЮ ЗАКОММЕНТИРУЙТЕ
+    id 'java'
+    id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'guru.qa'
 version = '2.1.4'
 
-//allure {
-//    version.set("${allureVersion}")
-//    adapter {
-//        aspectjVersion.set("1.9.22")
-//        aspectjWeaver.set(true)
-//    }
-//}
+repositories {
+    mavenCentral()
+}
 
-// ПОЛНОСТЬЮ УДАЛИТЕ ИЛИ ЗАКОММЕНТИРУЙТЕ ВЕСЬ БЛОК xjcGeneration
-// xjcGeneration {
-//     defaultAdditionalXjcOptions = ['encoding': 'UTF-8']
-//     schemas {
-//         wsdlSchema {
-//             schemaFile = 'userdata.wsdl'
-//             javaPackageName = 'jaxb.userdata'
-//             sourceSet = 'test'
-//         }
-//     }
-// }
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+ext {
+    lombokVersion = '1.18.42'
+    junitVersion = '5.10.3'
+    allureVersion = '2.26.0'
+    selenideVersion = '7.10.1'
+    okhttp3Version = '5.1.0'
+    retrofitVersion = '3.0.0'
+    logbackVersion = '1.5.18'
+    slf4jVersion = '2.0.17'
+    springJdbcVersion = '6.2.11'
+    springCryptoVersion = '6.5.5'
+    p6spyVersion = '3.9.1'
+    hibernateVersion = '7.1.1.Final'
+    springDataCommonsVersion = '3.5.4'
+    ashotVersion = '1.5.4'
+    fakerVersion = '1.0.2'
+    postgresDriverVersion = '42.7.4'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:3.5.8"
+    }
+}
 
 sourceSets {
     test {
         java {
             srcDir('src/test/java')
-            // srcDir("$buildDir/generated-sources/test/xjc")  // ЗАКОММЕНТИРУЙТЕ
         }
     }
 }
-
-
 
 dependencies {
     // Logs
@@ -95,7 +72,7 @@ dependencies {
 
     // DB
     testImplementation "org.springframework:spring-jdbc:${springJdbcVersion}"
-    testImplementation "org.postgresql:postgresql:${project.ext.postgresDriverVersion}"
+    testImplementation "org.postgresql:postgresql:${postgresDriverVersion}"
     testImplementation "p6spy:p6spy:${p6spyVersion}"
     testImplementation "org.hibernate:hibernate-core:${hibernateVersion}"
     testImplementation "org.springframework.security:spring-security-crypto:${springCryptoVersion}"
@@ -110,7 +87,6 @@ dependencies {
         exclude group: 'com.codeborne'
     }
     testImplementation "io.qameta.allure:allure-okhttp3:${allureVersion}"
-    testImplementation "io.qameta.allure:allure-grpc:${allureVersion}"
 
     // WEB
     testImplementation "com.codeborne:selenide:${selenideVersion}"
@@ -124,14 +100,9 @@ dependencies {
     testImplementation 'com.google.code.findbugs:jsr305:3.0.2'
     testImplementation 'com.github.vertical-blank:sql-formatter:2.0.5'
 
-    // Wiremock
-//    testImplementation "org.wiremock:wiremock:${project.ext.wiremockVersion}"
-
     // Lombok
-    testAnnotationProcessor "org.projectlombok:lombok:${project.ext.lombokVersion}"
-    testCompileOnly "org.projectlombok:lombok:${project.ext.lombokVersion}"
-
-    implementation 'io.micrometer:context-propagation:1.1.1'
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -144,11 +115,7 @@ test {
         events "started", "passed", "skipped", "failed"
         showStandardStreams = true
     }
-    failOnNoDiscoveredTests = false
-}
-
-tasks.register('printVersion') {
-    doLast {
-        println project.version
+    filter {
+        failOnNoMatchingTests = false
     }
 }
