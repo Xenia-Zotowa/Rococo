@@ -70,8 +70,8 @@ services:
       - GATEWAY_DB_USER=root
       - GATEWAY_DB_PASSWORD=${GATEWAY_DB_PASSWORD}
       - GATEWAY_DB_NAME=${GATEWAY_DB_NAME}
-      - ROCOCO_FRONT_BASE_URI=http://rococo-client:80
-      - ROCOCO_AUTH_BASE_URI=http://rococo-auth:9000
+      - ROCOCO_FRONT_BASE_URI=http://localhost:8080
+      - ROCOCO_AUTH_BASE_URI=http://localhost:9000
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       gateway-rococo-db:

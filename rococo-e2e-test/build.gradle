@@ -50,6 +50,8 @@ sourceSets {
 }
 
 dependencies {
+    testImplementation "com.codeborne:selenide:7.10.1"
+    testImplementation "org.junit.jupiter:junit-jupiter:5.10.0"
     // Logs
     testImplementation "ch.qos.logback:logback-classic:${logbackVersion}"
     testImplementation "org.slf4j:slf4j-api:${slf4jVersion}"

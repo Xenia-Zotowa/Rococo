@@ -1,40 +1,33 @@
 #!/bin/bash
 
-# Убиваем старые процессы если есть
+# Убиваем старые процессы
 pkill Xvfb 2>/dev/null
-pkill chromium 2>/dev/null
+pkill firefox 2>/dev/null
 
-# Запускаем Xvfb с правильными параметрами
-Xvfb :99 -screen 0 1920x1080x24 -ac +extension GLX +render -noreset &
+# Запускаем Xvfb
+Xvfb :99 -screen 0 1920x1080x24 -ac &
 export DISPLAY=:99
 
 # Ждем запуска Xvfb
 sleep 5
 
-# Проверяем что Xvfb работает
-if ! pgrep Xvfb; then
-    echo "ERROR: Xvfb failed to start"
-    exit 1
-fi
-
 echo "Waiting for services to be ready..."
 sleep 10
 
-echo "Running tests..."
+echo "Running tests with Firefox..."
 
-# Запускаем тесты с явными параметрами
+# Запускаем тесты с Firefox
 gradle test --no-daemon \
-  -Dselenide.browser=chrome \
+  -Dselenide.browser=firefox \
   -Dselenide.headless=true \
   -Dselenide.browserSize=1920x1080 \
-  -Dselenide.timeout=10000 \
-  -Dselenide.startMaximized=false \
-  -Dchromeoptions.args="--no-sandbox,--disable-dev-shm-usage,--disable-gpu,--headless=new,--disable-setuid-sandbox,--disable-software-rasterizer,--disable-features=VizDisplayCompositor,--remote-debugging-port=9222"
+  -Dselenide.timeout=10000
 
 EXIT_CODE=$?
 
 # Завершаем процессы
 pkill Xvfb 2>/dev/null
-pkill chromium 2>/dev/null
+pkill firefox 2>/dev/null
 
+echo "Tests completed with exit code: $EXIT_CODE"
 exit $EXIT_CODE

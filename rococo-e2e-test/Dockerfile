@@ -13,23 +13,18 @@ RUN gradle testClasses --no-daemon
 # Stage 2: Runtime
 FROM eclipse-temurin:21-jre-alpine
 
-# Устанавливаем Chrome, зависимости и Gradle
+# Устанавливаем Firefox и зависимости
 RUN apk add --no-cache \
-    chromium \
-    chromium-chromedriver \
-    mesa-gl \
-    dbus \
-    ttf-freefont \
+    firefox \
     xvfb \
     bash \
-    curl \
-    gradle
+    gradle \
+    dbus \
+    ttf-freefont \
+    mesa-gl
 
 # Устанавливаем переменные окружения
-ENV CHROME_BIN=/usr/bin/chromium-browser \
-    CHROME_PATH=/usr/lib/chromium/ \
-    SELENIDE_HEADLESS=true \
-    DISPLAY=:99
+ENV DISPLAY=:99
 
 WORKDIR /app
 
