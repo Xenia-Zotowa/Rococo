@@ -33,7 +33,7 @@ public class RegisterTest {
         sleep(1000);
         loginPage.switchingToTheAuthorizationForm();
         sleep(1000);
-        registerPage.registerUser(randomUsername, "123", "123")
+        registerPage.registerUser("admin", "123", "123")
                 .checkRegister();
         closeWebDriver();
     }
