@@ -13,7 +13,7 @@ public class RegisterPage {
     private final SelenideElement passwordInput = $("input[name='password']");
     private final SelenideElement passwordSubmitInput = $("input[name='passwordSubmit']");
     private final SelenideElement submitButton = $("button[type='submit']");
-    private final SelenideElement formParagraphSuccess =  $(".form__subheader");
+    private final SelenideElement formParagraphSuccess =  $(".form .form__subheader");
     private final SelenideElement logInToTheSystem = $(".form__submit");
     private final SelenideElement errorUsername = $(".form__element .form__error.error__username");
     private final SelenideElement errorPassword = $(".form__element .form__error.error__password");

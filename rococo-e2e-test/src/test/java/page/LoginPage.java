@@ -3,6 +3,8 @@ package page;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
+import java.time.Duration;
+
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.*;
@@ -12,7 +14,7 @@ public class LoginPage {
     private final SelenideElement usernameInput = $("input[name='username']");
     private final SelenideElement passwordInput = $("input[name='password']");
     private final SelenideElement enterButton = $(".form__submit");
-    private final SelenideElement errorLogin = $( " .form__error.login__error");
+    private final SelenideElement errorLogin = $( ".form .form__error.login__error");
     private final SelenideElement visibleButton = $(".form__element .form__password-button");
 
     @Step("Переход в форму регистрации")
@@ -39,10 +41,10 @@ public class LoginPage {
     }
 
 
-    @Step("Проверка ошибки авторизации с неправильным логином")
-    public LoginPage checkLoginErrorTest (){
+    @Step("Проверка ошибки авторизации с неправильными данными")
+    public LoginPage checkLoginErrorTest() {
         errorLogin.shouldBe(visible)
-                .shouldHave(text("Неверные учетные данные пользователя"));
+                .shouldHave(text("Bad credentials"), Duration.ofSeconds(10));
         return this;
     }
 

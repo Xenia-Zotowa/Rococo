@@ -88,7 +88,7 @@ services:
     ports:
       - "8080:80"
     environment:
-      - BACKEND_URL=http://rococo-gateway:9001
+      - BACKEND_URL=http://localhost:9001
     networks:
       - rococo-network
 
@@ -99,9 +99,9 @@ services:
     environment:
       - TEST_ENV=docker
       - SELENIDE_HEADLESS=true
-      - SELENIDE_BASE_URL=http://rococo-client:80
-      - AUTH_URL=http://rococo-auth:9000
-      - GATEWAY_URL=http://rococo-gateway:9001
+      - SELENIDE_BASE_URL=http://localhost:8080
+      - AUTH_URL=http://localhost:9000
+      - GATEWAY_URL=http://localhost:9001
     depends_on:
       rococo-auth:
         condition: service_started
