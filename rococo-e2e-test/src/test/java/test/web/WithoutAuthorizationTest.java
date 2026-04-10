@@ -51,4 +51,31 @@ public class WithoutAuthorizationTest {
                 .checkToggleLight()
                 .switchingToggle();
     }
+
+    @Test
+    @DisplayName("Проверка перехода в раздел картин")
+    public void checkingTheTransitionToThePicturesSection(){
+
+        mainPage.checkBackHome()
+                .paintingSectionFoto()
+                .checkingThePictureTitle();
+    }
+
+    @Test
+    @DisplayName("Проверка перехода в раздел художники")
+    public void checkingTheTransitionToTheArtistSection(){
+
+        mainPage.checkBackHome()
+                .artistSectionFoto()
+                .checkingTheArtistTitle();
+    }
+
+    @Test
+    @DisplayName("Проверка перехода в раздел музеи")
+    public void checkingTheTransitionToTheMuseumSection(){
+
+        mainPage.checkBackHome()
+                .museumSectionFoto()
+                .checkingTheMuseumTitle();
+    }
 }

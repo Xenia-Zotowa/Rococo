@@ -11,8 +11,10 @@ public class MainPage {
     private final SelenideElement enterButton = $x("//button[text()='Войти']");
     private final SelenideElement homePage = $("#page-content");
     private final SelenideElement paintingButton = $(".flex.items-baseline a[href=\"/painting\"]");
-    private final SelenideElement paintingFoto = $(".mx-auto li a[href=\"/painting\"]");
+    private final SelenideElement paintingFoto = $("img[src=\"/piones-dtuchs.jpeg\"]");
     private final SelenideElement artistButton = $(".flex.items-baseline a[href=\"/artist\"]");
+    private final SelenideElement artistFoto = $("img[src=\"/renuar.jpeg\"]");
+    private final SelenideElement museumFoto = $("img[src=\"/hermitage.jpg\"]");
     private final SelenideElement museumButton = $(".flex.items-baseline a[href=\"/museum\"]");
     private final SelenideElement addAPictureButton = $x("//*[text()=\"Добавить картину\"]");
     private final SelenideElement addAArtistButton = $x("//*[text()=\"Добавить художника\"]");
@@ -26,6 +28,9 @@ public class MainPage {
     private final SelenideElement surnameInput = $("input[name='surname']");
     private final SelenideElement updatProfile = $(".btn.variant-filled-primary");
     private final SelenideElement fotoProfile = $("input[name='content']");
+    private final SelenideElement title = $("#page-content .flex.items-center");
+    private final SelenideElement inputSearch = $(".input");
+    private final SelenideElement buttonSearch = $(".flex.justify-center button[type=\"button\"]");
 
 
     @Step("Переход в форму авторизации")
@@ -53,6 +58,38 @@ public class MainPage {
         return this;
     }
 
+
+    @Step("Переход в раздел художники через фото")
+    public MainPage artistSectionFoto(){
+        artistFoto.click();
+        return this;
+    }
+
+
+    @Step("Переход в раздел музеи через фото")
+    public MainPage museumSectionFoto(){
+        museumFoto.click();
+        return this;
+    }
+
+    @Step("Проверка наличия заголовка Картины")
+    public MainPage checkingThePictureTitle(){
+        title.shouldBe(visible).shouldHave(text("Картины"));
+        return this;
+    }
+
+    @Step("Проверка наличия заголовка Художники")
+    public MainPage checkingTheArtistTitle(){
+        title.shouldBe(visible).shouldHave(text("Художники"));
+        return this;
+    }
+
+    @Step("Проверка наличия заголовка Музеи")
+    public MainPage checkingTheMuseumTitle(){
+        title.shouldBe(visible).shouldHave(text("Музеи"));
+        return this;
+    }
+
     @Step("Переход в раздел художники")
     public MainPage artistSection(){
         artistButton.click();
@@ -65,7 +102,7 @@ public class MainPage {
         return this;
     }
 
-    @Step("Добавление картинки")
+    @Step("Добавление картины")
     public MainPage addAPicture(){
         addAPictureButton.click();
         return this;
@@ -147,6 +184,14 @@ public class MainPage {
     public MainPage updateYourFotoProfile(){
         File imageFile = new File("src/test/resources/images/kapi.jpg");
         fotoProfile.uploadFile(imageFile);
+
+        return this;
+    }
+
+    @Step("Поиск")
+    public MainPage search(String value){
+        inputSearch.setValue(value);
+        buttonSearch.click();
 
         return this;
     }
