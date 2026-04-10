@@ -49,11 +49,11 @@ create table if not exists `painting`
     constraint fk_museum_id foreign key (museum_id) references `museum` (id)
     );
 
-delete from `rococo-gateway`.`user`;
-delete from `rococo-gateway`.`painting`;
-delete from `rococo-gateway`.`artist`;
-delete from `rococo-gateway`.`museum`;
-delete from `rococo-gateway`.`country`;
+delete from `user`;
+delete from `painting`;
+delete from `artist`;
+delete from `museum`;
+delete from `country`;
 
 insert into `country` (name) value ('Австралия');
 insert into `country` (name) value ('Австрия');

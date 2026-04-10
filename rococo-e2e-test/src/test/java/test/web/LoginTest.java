@@ -30,7 +30,7 @@ public class LoginTest {
         loginPage.loginTest("admin", "123");
         mainPage.checkBackHome();
 
-        closeWebDriver();
+                closeWebDriver();
     }
 
     @Test
