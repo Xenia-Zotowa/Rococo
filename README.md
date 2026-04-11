@@ -5,7 +5,7 @@
 1. Перейти в infrastructure
 2. Вызвать в консоли (запуск проекта без тестов): docker compose up --build
 3. Вызвать в консоли (запуск проекта с тестам): docker compose --profile e2e up --build
-4. Для оставновки с очисткой всего: docker compose down -v
+4. Для остановки с очисткой всего: docker compose down -v
 
 Порты на localhost
 

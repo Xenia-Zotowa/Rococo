@@ -3,21 +3,26 @@ package io.student.rococo.service;
 import io.student.rococo.data.UserEntity;
 import io.student.rococo.data.repository.UserRepository;
 import io.student.rococo.dto.UserDTO;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import io.student.rococo.exception.ResourceNotFoundException;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.stereotype.Component;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@Component
+import java.util.Map;
+import java.util.UUID;
+
+@Service
 public class UserService {
+
     private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Преобразует JWT токен в UserDTO.
+     */
     public UserDTO fromJwt(Jwt jwt) {
         var builder = UserDTO.builder()
                 .id(getUUID(jwt.getClaims(), "sub"))
@@ -26,19 +31,42 @@ public class UserService {
         String email = jwt.getClaimAsString("email");
         if (email != null) {
             builder.email(email);
-            builder.emailVerified(String.valueOf(jwt.getClaim("email_verified")));
+            Object emailVerified = jwt.getClaim("email_verified");
+            builder.emailVerified(emailVerified != null ? String.valueOf(emailVerified) : "false");
         }
 
         return builder.build();
     }
 
-    private java.util.UUID getUUID(Object claims, String claimName) {
+    /**
+     * Обновляет данные пользователя.
+     */
+    @Transactional
+    public UserDTO update(UUID id, io.student.rococo.dto.UserPatchDTO patch) {
+        UserEntity user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not 	found", id));
+
+        if (patch.getUsername() != null) user.setUsername(patch.getUsername());
+        if (patch.getEmail() != null) user.setEmail(patch.getEmail());
+
+        userRepository.save(user);
+
+        return UserDTO.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .emailVerified(String.valueOf(user.isEmailVerified()))
+                .build();
+    }
+
+    private UUID getUUID(Map<String, Object> claims, String claimName) {
         try {
-            var claim = (String) ((java.util.Map)claims).get(claimName);
+            var claim = claims.get(claimName);
             if (claim != null) {
-                return java.util.UUID.fromString(claim);
+                return UUID.fromString(claim.toString());
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         return null;
     }
 }

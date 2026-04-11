@@ -9,7 +9,6 @@ import page.LoginPage;
 import page.MainPage;
 import test.helper.DatabaseHelper;
 import test.helper.DatabaseType;
-import test.helper.TestDatabaseHelper;
 
 import java.util.Map;
 

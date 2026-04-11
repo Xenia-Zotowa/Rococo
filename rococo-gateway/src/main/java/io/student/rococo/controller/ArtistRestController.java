@@ -5,10 +5,12 @@ import io.student.rococo.dto.PageableResponse;
 import io.student.rococo.service.ArtistService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,37 +29,29 @@ public class ArtistRestController {
         this.artistService = artistService;
     }
 
+    @GetMapping("/artist/{id}")
+    public ResponseEntity<ArtistDTO> getArtist(@PathVariable UUID id) {
+        return ResponseEntity.ok(artistService.findById(id));
+    }
+
     @GetMapping("/artist")
-    public PageableResponse<ArtistDTO> getArtists(
+    public ResponseEntity<PageableResponse> getArtists(
             Pageable pageable,
             @RequestParam(required = false) String name,
             UriComponentsBuilder uriBuilder) {
-        return artistService.getList(pageable, name);
+        return ResponseEntity.ok(artistService.getList(pageable, name));
     }
 
-    @GetMapping("/artist/{id}")
-    public ResponseEntity<ArtistDTO> getArtist(@PathVariable UUID id) {
-        var artist = artistService.findById(id);
-        return ResponseEntity.ok(artist);
+    @PostMapping("/artist")
+    public ResponseEntity<ArtistDTO> createArtist(@RequestBody io.student.rococo.dto.ArtistDTO dto) {
+        var artist = artistService.save(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(artist);
     }
 
-    @PatchMapping("/artist/{id}")
+    @PatchMapping("/artist")
     public ResponseEntity<ArtistDTO> updateArtist(
-            @PathVariable UUID id,
             @RequestBody io.student.rococo.dto.ArtistPatchDTO patch) {
-        var updated = artistService.update(id, patch);
+        var updated = artistService.update(patch.getId(), patch);
         return ResponseEntity.ok(updated);
-    }
-
-    @PutMapping("/artist")
-    public ResponseEntity<ArtistDTO> updateArtistList(
-            Pageable pageable,
-            @RequestParam(required = false) String name) {
-        List<ArtistDTO> result = artistService.getList(pageable, name).getContent();
-        if (result.isEmpty()) {
-            return ResponseEntity.ok().build();
-        }
-        var first = result.get(0);
-        return ResponseEntity.ok(first);
     }
 }

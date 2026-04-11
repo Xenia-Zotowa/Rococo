@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api")
 public class UserRestController {
@@ -27,11 +29,9 @@ public class UserRestController {
     }
 
     @PatchMapping("/user")
-    public ResponseEntity<io.student.rococo.dto.UserDTO> updateUser(Authentication auth, io.student.rococo.dto.UserPatchDTO patch) {
-        var user = userService.fromJwt(((org.springframework.security.oauth2.jwt.Jwt) auth.getPrincipal()));
-        if (patch.getEmail() != null && !patch.getEmail().isBlank()) {
-            // TODO: update email in database
-        }
-        return ResponseEntity.ok(user);
+    public ResponseEntity<io.student.rococo.dto.UserDTO> updateUser(Authentication auth, @RequestBody io.student.rococo.dto.UserPatchDTO patch) {
+        var userId = UUID.fromString(((org.springframework.security.oauth2.jwt.Jwt) auth.getPrincipal()).getSubject());
+        var updatedUser = userService.update(userId, patch);
+        return ResponseEntity.ok(updatedUser);
     }
 }

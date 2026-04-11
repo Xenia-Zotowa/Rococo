@@ -12,11 +12,11 @@ services:
     volumes:
       - rococo_auth_db_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${AUTH_DB_PASSWORD}", "--silent"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${AUTH_DB_USER}", "-p${AUTH_DB_PASSWORD}", "--silent"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 30s
+      start_period: 60s
     networks:
       - rococo-network
 
@@ -33,11 +33,11 @@ services:
     volumes:
       - rococo_gateway_db_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${GATEWAY_DB_PASSWORD}", "--silent"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${GATEWAY_DB_USER}", "-p${GATEWAY_DB_PASSWORD}", "--silent"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 30s
+      start_period: 60s
     networks:
       - rococo-network
 
@@ -52,7 +52,6 @@ services:
       - AUTH_DB_USER=${AUTH_DB_USER}
       - AUTH_DB_PASSWORD=${AUTH_DB_PASSWORD}
       - AUTH_DB_NAME=${AUTH_DB_NAME}
-      - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       auth-rococo-db:
         condition: service_healthy
@@ -67,17 +66,14 @@ services:
       - "9001:9001"
     environment:
       - GATEWAY_DB_URL=jdbc:mysql://gateway-rococo-db:3306/${GATEWAY_DB_NAME}?serverTimezone=UTC&createDatabaseIfNotExist=true
-      - GATEWAY_DB_USER=root
+      - GATEWAY_DB_USER=${GATEWAY_DB_USER}
       - GATEWAY_DB_PASSWORD=${GATEWAY_DB_PASSWORD}
       - GATEWAY_DB_NAME=${GATEWAY_DB_NAME}
       - ROCOCO_FRONT_BASE_URI=http://localhost:8080
-      - ROCOCO_AUTH_BASE_URI=http://localhost:9000
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_ARGUMENTS=--debug
     depends_on:
       gateway-rococo-db:
         condition: service_healthy
-      rococo-auth:
-        condition: service_started
     networks:
       - rococo-network
 
@@ -87,37 +83,38 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:80"
-    environment:
-      - BACKEND_URL=http://localhost:9001
     networks:
       - rococo-network
 
-  rococo-e2e-test:
-    build:
-      context: ../rococo-e2e-test
-      dockerfile: Dockerfile
-    environment:
-      - TEST_ENV=docker
-      - SELENIDE_HEADLESS=true
-      - SELENIDE_BASE_URL=http://localhost:8080
-      - AUTH_URL=http://localhost:9000
-      - GATEWAY_URL=http://localhost:9001
-    depends_on:
-      rococo-auth:
-        condition: service_started
-      rococo-gateway:
-        condition: service_started
-      rococo-client:
-        condition: service_started
-    networks:
-      - rococo-network
-    profiles:
-      - e2e
+#  rococo-api-tests:
+#    build:
+#      context: ../rococo-api-tests
+#      dockerfile: Dockerfile
+#    depends_on:
+#      rococo-auth:
+#        condition: service_started
+#      rococo-gateway:
+#        condition: service_started
+#    networks:
+#      - rococo-network
+
+#  rococo-e2e-tests:
+#    build:
+#      context: ../rococo-e2e-tests
+#      dockerfile: Dockerfile
+#    depends_on:
+#      rococo-auth:
+#        condition: service_started
+#      rococo-gateway:
+#        condition: service_started
+#      rococo-client:
+#        condition: service_started
+#    networks:
+#      - rococo-network
 
 networks:
   rococo-network:
     name: rococo-network
-    driver: bridge
 
 volumes:
   rococo_auth_db_data:

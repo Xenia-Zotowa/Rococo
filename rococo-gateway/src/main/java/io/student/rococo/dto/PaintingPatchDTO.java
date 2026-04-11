@@ -14,4 +14,5 @@ public class PaintingPatchDTO {
     private String description;
     private byte[] content;
     private Long museumId;
+    private java.util.UUID id;
 }

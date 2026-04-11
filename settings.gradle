@@ -1,7 +1,4 @@
 rootProject.name = 'rococo'
 include 'rococo-gateway'
 include 'rococo-auth'
-
 include 'rococo-e2e-test'
-include 'untitled'
-include 'untitled'

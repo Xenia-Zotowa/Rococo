@@ -1,17 +1,32 @@
 package config;
 
-public interface Config {
+public class Config {
 
-    static Config getInstance() {
-        return LocalConfig.INSTANCE;
+    private static Config instance;
+
+    private Config() {
     }
 
-    String frontUrl();
+    public static Config getInstance() {
+        if (instance == null) {
+            instance = new Config();
+        }
+        return instance;
+    }
 
-    String spendUrl();
+    public String gatewayUrl() {
+        return System.getProperty("gateway.url", "http://localhost:9001");
+    }
 
-    String spendJdbcUrl();
+    public String authUrl() {
+        return System.getProperty("auth.url", "http://localhost:9000");
+    }
 
-    String githubUrl();
+    public String frontUrl() {
+        return System.getProperty("front.url", "http://localhost:3000");
+    }
+
+    public String userdataUrl() {
+        return System.getProperty("userdata.url", "http://localhost:9002");
+    }
 }
-

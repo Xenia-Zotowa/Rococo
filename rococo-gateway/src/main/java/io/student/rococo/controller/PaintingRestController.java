@@ -24,7 +24,7 @@ public class PaintingRestController {
             Pageable pageable,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) Long museumId) {
-        return ResponseEntity.ok(paintingService.getList(pageable));
+        return ResponseEntity.ok(paintingService.getList(pageable, title, museumId));
     }
 
     @GetMapping("/painting/{id}")
@@ -33,24 +33,30 @@ public class PaintingRestController {
         return ResponseEntity.ok(painting);
     }
 
-    @GetMapping("/painting/by-artist/{artistId}")
-    public ResponseEntity<List<io.student.rococo.dto.PaintingDTO>> getPaintingsByArtist(@PathVariable UUID artistId) {
+    @GetMapping("/painting/author/{artistId}")
+    public ResponseEntity<PageableResponse<io.student.rococo.dto.PaintingDTO>> getPaintingsByArtist(@PathVariable UUID artistId) {
         var paintings = paintingService.findByArtistId(artistId);
-        return ResponseEntity.ok(paintings);
+        // Since findByArtistId returns List, we wrap it in a simple PageableResponse to match frontend expectation
+        return ResponseEntity.ok(new io.student.rococo.dto.PageableResponse<>(
+                paintings, 0, 1, paintings.size(), 1, true, true));
     }
 
-    @PatchMapping("/painting/{id}")
+    @PostMapping("/painting")
+    public ResponseEntity<io.student.rococo.dto.PaintingDTO> createPainting(@RequestBody io.student.rococo.dto.PaintingDTO dto) {
+        var painting = paintingService.save(dto);
+        return ResponseEntity.status(org.springframework.http.HttpStatus.CREATED).body(painting);
+    }
+
+    @PatchMapping("/painting")
     public ResponseEntity<io.student.rococo.dto.PaintingDTO> updatePainting(
-            @PathVariable UUID id,
             @RequestBody io.student.rococo.dto.PaintingPatchDTO patch) {
-        var painting = paintingService.findById(id);
-        if (patch == null) return ResponseEntity.ok(painting);
-        if (patch.getTitle() != null) painting.setTitle(patch.getTitle());
-        if (patch.getDescription() != null) painting.setDescription(patch.getDescription());
-        if (patch.getContent() != null) painting.setContent(patch.getContent());
-        var updated = paintingService.updatePainting(id, patch);
+        if (patch.getId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        var updated = paintingService.updatePainting(patch.getId(), patch);
         return ResponseEntity.ok(updated);
     }
+
 
     @GetMapping("/error")
     public String handleError() {

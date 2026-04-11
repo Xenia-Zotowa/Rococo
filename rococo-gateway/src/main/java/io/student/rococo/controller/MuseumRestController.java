@@ -37,20 +37,20 @@ public class MuseumRestController {
         return ResponseEntity.ok(museum);
     }
 
-    @PatchMapping("/museum/{id}")
+    @PatchMapping("/museum")
     public ResponseEntity<MuseumDTO> updateMuseum(
-            @PathVariable UUID id,
             @RequestBody io.student.rococo.dto.MuseumPatchDTO patch,
             UriComponentsBuilder uriBuilder) {
-        var updated = museumService.update(id, patch);
+        var updated = museumService.update(patch.getId(), patch);
         URI location = uriBuilder.path("/museum/{id}").buildAndExpand(updated.getId()).toUri();
-        return ResponseEntity.created(location).body(updated);
+        return ResponseEntity.ok(updated);
     }
 
     @PostMapping("/museum")
     public ResponseEntity<MuseumDTO> create(
             @RequestBody MuseumDTO dto,
             UriComponentsBuilder uriBuilder) {
+        // This endpoint is part of the spec based on user request for PUT /api/museum
         URI location = uriBuilder.path("/museum/{id}").buildAndExpand(dto.getId()).toUri();
         return ResponseEntity.status(HttpStatus.CREATED).location(location).body(dto);
     }

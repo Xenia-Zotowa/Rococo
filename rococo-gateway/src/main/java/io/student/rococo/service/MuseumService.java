@@ -7,9 +7,12 @@ import io.student.rococo.data.repository.MuseumRepository;
 import io.student.rococo.dto.GeoDTO;
 import io.student.rococo.dto.MuseumDTO;
 import io.student.rococo.dto.PageableResponse;
+import io.student.rococo.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
@@ -33,25 +36,27 @@ public class MuseumService {
                 .map(this::toDTO)
                 .toList();
 
-        return new PageableResponse<>(dtos,
+        return new PageableResponse<>(
+                dtos,
                 museums.getNumber(),
                 museums.getSize(),
                 museums.getTotalElements(),
                 museums.getTotalPages(),
                 museums.isLast(),
-                museums.isFirst());
+                museums.isFirst()
+        );
     }
 
     public MuseumDTO findById(java.util.UUID id) {
         var museum = museumRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Museum not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Museum not found", id));
         return toDTO(museum);
     }
 
     @Transactional
     public MuseumDTO update(java.util.UUID id, io.student.rococo.dto.MuseumPatchDTO patch) {
         var museum = museumRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Museum not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Museum not found", id));
 
         if (patch.getTitle() != null) {
             museum.setTitle(patch.getTitle());
@@ -69,10 +74,8 @@ public class MuseumService {
             }
             if (geo.getCountry() != null && geo.getCountry().getId() != null) {
                 CountryEntity country = countryRepository.findById(geo.getCountry().getId())
-                        .orElseThrow(() -> new IllegalArgumentException("Country not found"));
+                        .orElseThrow(() -> new ResourceNotFoundException("Country not found", geo.getCountry().getId()));
                 museum.setCountry(country);
-            } else if (geo.getCountry() != null && geo.getCountry().getId() == null) {
-                museum.setCountry(null);
             }
         }
 

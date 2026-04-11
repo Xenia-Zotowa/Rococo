@@ -60,17 +60,21 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 
-    // REST
-    testImplementation "com.squareup.okhttp3:logging-interceptor:${okhttp3Version}"
-    testImplementation "com.squareup.okhttp3:okhttp-urlconnection:${okhttp3Version}"
-    testImplementation "com.squareup.okhttp3:okhttp:${okhttp3Version}"
-    testImplementation("com.squareup.retrofit2:retrofit:${retrofitVersion}") {
-        exclude group: "com.squareup.okhttp3"
-    }
-    testImplementation("com.squareup.retrofit2:converter-jackson:${retrofitVersion}") {
-        exclude group: "com.squareup.okhttp3"
-    }
-    testImplementation "org.springframework.data:spring-data-commons:${springDataCommonsVersion}"
+    // Retrofit for REST API calls
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-jackson:2.9.0'
+
+    // Jackson for JSON parsing
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+
+    // Spring Data for Page interface
+    implementation 'org.springframework.data:spring-data-commons:2.7.0'
+
+    // Allure for annotations
+    implementation 'io.qameta.allure:allure-java-commons:2.21.0'
+
+    // JSr305 for @Nonnull, @Nullable
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
     // Spring Boot
     implementation 'org.springframework.boot:spring-boot-starter'

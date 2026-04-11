@@ -4,6 +4,7 @@ import io.student.rococo.data.CountryEntity;
 import io.student.rococo.data.repository.CountryRepository;
 import io.student.rococo.dto.CountryDTO;
 import io.student.rococo.dto.PageableResponse;
+import io.student.rococo.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,13 +25,16 @@ public class CountryService {
         var dtos = countries.stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
-        return new PageableResponse<>(dtos,
+
+        return new PageableResponse<>(
+                dtos,
                 0,
-                countries.size(),
-                countries.size(),
+                dtos.size(),
+                dtos.size(),
                 1,
                 true,
-                true);
+                true
+        );
     }
 
     private CountryDTO toDTO(CountryEntity country) {

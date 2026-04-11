@@ -4,17 +4,19 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import io.student.rococo.data.repository.MuseumRepository;
+import java.util.UUID;
 
 @Component
-public class MuseumIdMustExistValidator implements ConstraintValidator<MuseumIdMustExist, Long> {
+public class MuseumIdMustExistValidator implements ConstraintValidator<MuseumIdMustExist, String> {
     @Autowired
-    private io.student.rococo.data.repository.PaintingRepository paintingRepository;
+    private MuseumRepository museumRepository;
 
     @Override
-    public boolean isValid(Long value, ConstraintValidatorContext context) {
-        if (value == null) return true;
+    public boolean isValid(String value, ConstraintValidatorContext context) {
+        if (value == null || value.isEmpty()) return true;
         try {
-            return paintingRepository.existsById(java.util.UUID.fromString(value.toString()));
+            return museumRepository.existsById(UUID.fromString(value));
         } catch (Exception e) {
             return false;
         }

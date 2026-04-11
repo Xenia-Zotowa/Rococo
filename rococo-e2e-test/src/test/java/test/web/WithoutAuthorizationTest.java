@@ -78,4 +78,31 @@ public class WithoutAuthorizationTest {
                 .museumSectionFoto()
                 .checkingTheMuseumTitle();
     }
+
+    @Test
+    @DisplayName("Проверка поиска в разделе музеи")
+    public void checkingTheSearchInTheMuseumsSection(){
+
+        mainPage.checkBackHome()
+                .museumSectionFoto()
+                .search("value");
+    }
+
+    @Test
+    @DisplayName("Проверка поиска в разделе картины")
+    public void checkingTheSearchInThePicturesSection(){
+
+        mainPage.checkBackHome()
+                .paintingSectionFoto()
+                .search("value");
+    }
+
+    @Test
+    @DisplayName("Проверка поиска в разделе художники")
+    public void checkingTheSearchInTheArtistSection(){
+
+        mainPage.checkBackHome()
+                .artistSectionFoto()
+                .search("value");
+    }
 }

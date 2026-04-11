@@ -4,6 +4,7 @@ import io.student.rococo.data.ArtistEntity;
 import io.student.rococo.data.repository.ArtistRepository;
 import io.student.rococo.dto.ArtistDTO;
 import io.student.rococo.dto.PageableResponse;
+import io.student.rococo.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,15 +38,14 @@ public class ArtistService {
 
     public ArtistDTO findById(java.util.UUID id) {
         var artist = artistRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Artist not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Artist not found", id));
         return toDTO(artist);
     }
 
     @Transactional
     public ArtistDTO update(java.util.UUID id, io.student.rococo.dto.ArtistPatchDTO patch) {
         var artist = artistRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Artist not found: " + id));
-
+                .orElseThrow(() -> new ResourceNotFoundException("Artist not found", id));
         if (patch.getName() != null) {
             artist.setName(patch.getName());
         }
@@ -55,9 +55,19 @@ public class ArtistService {
         if (patch.getPhoto() != null) {
             artist.setPhoto(patch.getPhoto());
         }
-
         var updated = artistRepository.save(artist);
         return toDTO(updated);
+    }
+
+    @Transactional
+    public ArtistDTO save(ArtistDTO dto) {
+        var artist = ArtistEntity.builder()
+                .name(dto.getName())
+                .biography(dto.getBiography())
+                .photo(dto.getPhoto())
+                .build();
+        var saved = artistRepository.save(artist);
+        return toDTO(saved);
     }
 
     private ArtistDTO toDTO(ArtistEntity artist) {

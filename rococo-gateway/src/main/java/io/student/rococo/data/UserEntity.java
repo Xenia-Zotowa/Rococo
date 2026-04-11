@@ -28,6 +28,12 @@ public class UserEntity {
     @Column(length = 255)
     private String lastname;
 
+    @Column(length = 255)
+    private String email;
+
+    @Column(name = "email_verified")
+    private boolean emailVerified;
+
     @Lob
     @Column(columnDefinition = "longblob")
     private byte[] avatar;
@@ -35,7 +41,7 @@ public class UserEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof UserEntity)) return false;
+        if (!(o.getClass().getName().equals(o.getClass().getName()))) return false;
         UserEntity that = (UserEntity) o;
         return Objects.equals(getId(), that.getId());
     }
