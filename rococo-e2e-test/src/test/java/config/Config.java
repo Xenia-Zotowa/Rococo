@@ -29,4 +29,7 @@ public class Config {
     public String userdataUrl() {
         return System.getProperty("userdata.url", "http://localhost:9002");
     }
+    public String spendUrl() {
+        return System.getProperty("userdata.url", "http://localhost:8080");
+    }
 }

@@ -128,10 +128,7 @@ public class PaintingService {
     }
 
     private io.student.rococo.data.MuseumEntity toMuseumEntity(MuseumDTO dto) {
-        // Это заглушка, так как в текущей архитектуре связь через ID.
-        // В реальной системе здесь должен быть поиск существующего музея.
-        if (dto == null || dto.getId() == null) return null;
-        // В рамках задачи не меняем реint репозиторий, поэтому предполагаем, что ID верный.
+               if (dto == null || dto.getId() == null) return null;
         return null;
     }
 }

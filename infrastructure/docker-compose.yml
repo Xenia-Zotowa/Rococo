@@ -90,6 +90,11 @@ services:
 #    build:
 #      context: ../rococo-api-tests
 #      dockerfile: Dockerfile
+#    environment:
+#      - TEST_GATEWAY_URL=http://rococo-gateway:9001
+#      - TEST_DB_URL=jdbc:mysql://gateway-rococo-db:3306/${GATEWAY_DB_NAME}?serverTimezone=UTC&createDatabaseIfNotExist=true
+#      - TEST_DB_USER=${GATEWAY_DB_USER}
+#      - TEST_DB_PASSWORD=${GATEWAY_DB_PASSWORD}
 #    depends_on:
 #      rococo-auth:
 #        condition: service_started
