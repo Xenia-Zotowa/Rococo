@@ -42,7 +42,7 @@ public class RegisterPage {
 
     @Step("Проверка ошибки регистрации существующего пользователя")
     public RegisterPage erroreUsernameRegister(){
-        sleep(50);
+        sleep(500);
         errorUsername.shouldBe(visible)
                 .shouldHave(text("already exists"));
         return this;

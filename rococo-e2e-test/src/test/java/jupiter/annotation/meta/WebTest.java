@@ -1,7 +1,6 @@
 package jupiter.annotation.meta;
 
 import jupiter.extension.BrowserExtension;
-import jupiter.extension.UsersQueueExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.lang.annotation.ElementType;
@@ -12,8 +11,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @ExtendWith({
-        BrowserExtension.class,
-        UsersQueueExtension.class
+        BrowserExtension.class
 })
 public @interface WebTest {
 }

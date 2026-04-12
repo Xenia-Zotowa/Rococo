@@ -1,6 +1,5 @@
 package config;
 
-
 public enum LocalConfig implements Config {
     INSTANCE;
 
