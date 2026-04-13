@@ -2,6 +2,7 @@ package io.student.rococo.controller;
 
 import io.student.rococo.dto.PageableResponse;
 import io.student.rococo.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -29,7 +30,7 @@ public class UserRestController {
     }
 
     @PatchMapping("/user")
-    public ResponseEntity<io.student.rococo.dto.UserDTO> updateUser(Authentication auth, @RequestBody io.student.rococo.dto.UserPatchDTO patch) {
+    public ResponseEntity<io.student.rococo.dto.UserDTO> updateUser(Authentication auth, @Valid @RequestBody io.student.rococo.dto.UserPatchDTO patch) {
         var userId = UUID.fromString(((org.springframework.security.oauth2.jwt.Jwt) auth.getPrincipal()).getSubject());
         var updatedUser = userService.update(userId, patch);
         return ResponseEntity.ok(updatedUser);

@@ -16,6 +16,19 @@ public interface PaintingRepository extends JpaRepository<PaintingEntity, UUID> 
 
     @Query("SELECT p FROM PaintingEntity p WHERE p.artist.id = :artistId ORDER BY p.title")
     List<PaintingEntity> findByArtistId(
-            @Param("artistId") UUID artistId
+            @Param("artistId") UUID artist
+    );
+
+    @Query("SELECT p FROM PaintingEntity p WHERE p.title LIKE %:title% AND p.museum.id = :museumId ORDER BY p.title")
+    Page<PaintingEntity> findByTitleContainingAndMuseumId(
+            @Param("title") String title,
+            @Param("museumId") UUID museumId,
+            Pageable pageable
+    );
+
+    @Query("SELECT p FROM PaintingEntity p WHERE p.title LIKE %:title% ORDER BY p.title")
+    Page<PaintingEntity> findByTitleContaining(
+            @Param("title") String title,
+            Pageable pageable
     );
 }

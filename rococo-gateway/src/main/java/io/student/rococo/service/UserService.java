@@ -44,7 +44,7 @@ public class UserService {
     @Transactional
     public UserDTO update(UUID id, io.student.rococo.dto.UserPatchDTO patch) {
         UserEntity user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not 	found", id));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found", id));
 
         if (patch.getUsername() != null) user.setUsername(patch.getUsername());
         if (patch.getEmail() != null) user.setEmail(patch.getEmail());

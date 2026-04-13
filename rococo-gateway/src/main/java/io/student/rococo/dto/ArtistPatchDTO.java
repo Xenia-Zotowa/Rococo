@@ -14,5 +14,5 @@ public class ArtistPatchDTO {
     private UUID id;
     private String name;
     private String biography;
-    private byte[] photo;
+    private String photo;
 }

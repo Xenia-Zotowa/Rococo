@@ -1,9 +1,8 @@
 package io.student.rococo.service;
 
-import io.student.rococo.data.CountryEntity;
 import io.student.rococo.data.MuseumEntity;
-import io.student.rococo.data.repository.CountryRepository;
 import io.student.rococo.data.repository.MuseumRepository;
+import io.student.rococo.data.repository.CountryRepository;
 import io.student.rococo.dto.GeoDTO;
 import io.student.rococo.dto.MuseumDTO;
 import io.student.rococo.dto.PageableResponse;
@@ -12,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @Service
@@ -65,7 +65,7 @@ public class MuseumService {
             museum.setDescription(patch.getDescription());
         }
         if (patch.getPhoto() != null) {
-            museum.setPhoto(patch.getPhoto());
+            museum.setPhoto(patch.getPhoto().getBytes(StandardCharsets.UTF_8));
         }
         if (patch.getGeo() != null) {
             var geo = patch.getGeo();
@@ -73,7 +73,7 @@ public class MuseumService {
                 museum.setCity(geo.getCity());
             }
             if (geo.getCountry() != null && geo.getCountry().getId() != null) {
-                CountryEntity country = countryRepository.findById(geo.getCountry().getId())
+                var country = countryRepository.findById(geo.getCountry().getId())
                         .orElseThrow(() -> new ResourceNotFoundException("Country not found", geo.getCountry().getId()));
                 museum.setCountry(country);
             }
@@ -100,7 +100,7 @@ public class MuseumService {
                 .id(museum.getId())
                 .title(museum.getTitle())
                 .description(museum.getDescription())
-                .photo(museum.getPhoto())
+                .photo(museum.getPhoto() != null ? new String(museum.getPhoto(), StandardCharsets.UTF_8) : null)
                 .geo(geo)
                 .build();
     }

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class PaintingPatchDTO {
     private String title;
     private String description;
-    private byte[] content;
+    private String content;
     private Long museumId;
     private java.util.UUID id;
 }

@@ -15,7 +15,7 @@ public class MuseumPatchDTO {
     private UUID id;
     private String title;
     private String description;
-    private byte[] photo;
+    private String photo;
     @Valid
     private GeoDTO geo;
 }

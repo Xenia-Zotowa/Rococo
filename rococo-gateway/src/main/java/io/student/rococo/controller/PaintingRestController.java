@@ -2,8 +2,8 @@ package io.student.rococo.controller;
 
 import io.student.rococo.dto.PageableResponse;
 import io.student.rococo.service.PaintingService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,21 +42,20 @@ public class PaintingRestController {
     }
 
     @PostMapping("/painting")
-    public ResponseEntity<io.student.rococo.dto.PaintingDTO> createPainting(@RequestBody io.student.rococo.dto.PaintingDTO dto) {
+    public ResponseEntity<io.student.rococo.dto.PaintingDTO> createPainting(@Valid @RequestBody io.student.rococo.dto.PaintingDTO dto) {
         var painting = paintingService.save(dto);
         return ResponseEntity.status(org.springframework.http.HttpStatus.CREATED).body(painting);
     }
 
     @PatchMapping("/painting")
     public ResponseEntity<io.student.rococo.dto.PaintingDTO> updatePainting(
-            @RequestBody io.student.rococo.dto.PaintingPatchDTO patch) {
+            @Valid @RequestBody io.student.rococo.dto.PaintingPatchDTO patch) {
         if (patch.getId() == null) {
             return ResponseEntity.badRequest().build();
         }
         var updated = paintingService.updatePainting(patch.getId(), patch);
         return ResponseEntity.ok(updated);
     }
-
 
     @GetMapping("/error")
     public String handleError() {

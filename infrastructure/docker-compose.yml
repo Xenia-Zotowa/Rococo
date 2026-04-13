@@ -77,6 +77,17 @@ services:
     networks:
       - rococo-network
 
+  #  rococo-gateway-wiremock:
+  #    image: wiremock/wiremock:2.35.0
+  #    restart: always
+  #    ports:
+  #      - "9001:8080"
+  #    volumes:
+  #      - ../wiremock/rest:/home/wiremock
+  #    command: ["--global-response-templating", "--enable-stub-cors"]
+  #    networks:
+  #      - rococo-network
+
   rococo-client:
     build:
       context: ../rococo-client
@@ -85,23 +96,6 @@ services:
       - "8080:80"
     networks:
       - rococo-network
-
-#  rococo-api-tests:
-#    build:
-#      context: ../rococo-api-tests
-#      dockerfile: Dockerfile
-#    environment:
-#      - TEST_GATEWAY_URL=http://rococo-gateway:9001
-#      - TEST_DB_URL=jdbc:mysql://gateway-rococo-db:3306/${GATEWAY_DB_NAME}?serverTimezone=UTC&createDatabaseIfNotExist=true
-#      - TEST_DB_USER=${GATEWAY_DB_USER}
-#      - TEST_DB_PASSWORD=${GATEWAY_DB_PASSWORD}
-#    depends_on:
-#      rococo-auth:
-#        condition: service_started
-#      rococo-gateway:
-#        condition: service_started
-#    networks:
-#      - rococo-network
 
 #  rococo-e2e-tests:
 #    build:

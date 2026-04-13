@@ -9,6 +9,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
+
 @Service
 @Transactional(readOnly = true)
 public class ArtistService {
@@ -53,7 +56,7 @@ public class ArtistService {
             artist.setBiography(patch.getBiography());
         }
         if (patch.getPhoto() != null) {
-            artist.setPhoto(patch.getPhoto());
+            artist.setPhoto(patch.getPhoto().getBytes(StandardCharsets.UTF_8));
         }
         var updated = artistRepository.save(artist);
         return toDTO(updated);
@@ -64,7 +67,7 @@ public class ArtistService {
         var artist = ArtistEntity.builder()
                 .name(dto.getName())
                 .biography(dto.getBiography())
-                .photo(dto.getPhoto())
+                .photo(dto.getPhoto() != null ? dto.getPhoto().getBytes(StandardCharsets.UTF_8) : null)
                 .build();
         var saved = artistRepository.save(artist);
         return toDTO(saved);
@@ -75,7 +78,7 @@ public class ArtistService {
                 .id(artist.getId())
                 .name(artist.getName())
                 .biography(artist.getBiography())
-                .photo(artist.getPhoto())
+                .photo(artist.getPhoto() != null ? new String(artist.getPhoto(), StandardCharsets.UTF_8) : null)
                 .build();
     }
 }
