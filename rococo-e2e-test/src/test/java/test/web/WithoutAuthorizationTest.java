@@ -94,7 +94,20 @@ public class WithoutAuthorizationTest {
 
         mainPage.checkBackHome()
                 .museumSectionFoto()
-                .search("value");
+                .search("Третьяковка")
+                .testingTheSearchByMuseum("Третьяковка");
+    }
+
+    @Test
+    @DisplayName("Проверка поиска в разделе музеи - нет данных")
+    public void checkingTheSearchInTheMuseumsSectionNoContent() {
+        String museumTitle = "Несуществующий музей";
+        mainPage.checkBackHome()
+                .museumSectionFoto()
+                .search(museumTitle)
+                .testingNoComtent("Музеи не найдены");
+        Map<String, Object> dbMuseum = gatewayDb.getMuseumByTitle(museumTitle);
+        assertThat(dbMuseum).isEqualTo(Map.of());
     }
 
     @Test
@@ -103,7 +116,20 @@ public class WithoutAuthorizationTest {
 
         mainPage.checkBackHome()
                 .paintingSectionFoto()
-                .search("value");
+                .search("Над вечным покоем")
+                .testingTheSearchByImage("Над вечным покоем");
+    }
+
+    @Test
+    @DisplayName("Проверка поиска в разделе картины - нет данных")
+    public void checkingTheSearchInThePicturesSectionNoContent() {
+        String paintingTitle = "Несуществующая картина";
+        mainPage.checkBackHome()
+                .paintingSectionFoto()
+                .search(paintingTitle)
+                .testingNoComtent("Картины не найдены");
+        Map<String, Object> dbPainting = gatewayDb.getPaintingByTitle(paintingTitle);
+        assertThat(dbPainting).isEqualTo(Map.of());
     }
 
     @Test
@@ -112,7 +138,20 @@ public class WithoutAuthorizationTest {
 
         mainPage.checkBackHome()
                 .artistSectionFoto()
-                .search("value");
+                .search("Шишкин")
+                .testingTheSearchByArtist("Шишкин");
+    }
+
+    @Test
+    @DisplayName("Проверка поиска в разделе художники - нет данных")
+    public void checkingTheSearchInTheArtistSectionNoContent() {
+        String artistName = "Несуществующий художник";
+        mainPage.checkBackHome()
+                .artistSectionFoto()
+                .search(artistName)
+                .testingNoComtent("Художники не найдены");
+        Map<String, Object> dbArtist = gatewayDb.getArtistByName(artistName);
+        assertThat(dbArtist).isEqualTo(Map.of());
     }
 
     @Test
@@ -129,6 +168,42 @@ public class WithoutAuthorizationTest {
 
         Map<String, Object> dbArtist = gatewayDb.getArtistByName(artistName);
         String dbDescription = (String) dbArtist.getOrDefault("biography", "");
+
+        assertThat(frontendDescription).isEqualTo(dbDescription);
+    }
+
+    @Test
+    @DisplayName("Сверка описания музея с фронта и БД")
+    public void verifyMuseumDescription() {
+        String museumTitle = "Третьяковка";
+
+        mainPage.checkBackHome()
+                .goToTheMuseumSectionByClickingOnTheTextBelowThePhoto()
+                .goToTheTretyakovGalleryInformationSection()
+                .getCurrentPageHtml();
+
+        String frontendDescription = mainPage.getMuseumDescriptionFromCurrentPage();
+
+        Map<String, Object> dbMuseum = gatewayDb.getMuseumByTitle(museumTitle);
+        String dbDescription = (String) dbMuseum.getOrDefault("description", "");
+
+        assertThat(frontendDescription).isEqualTo(dbDescription);
+    }
+
+    @Test
+    @DisplayName("Сверка описания картины с фронта и БД")
+    public void verifyPaintingDescription() {
+        String museumTitle = "Над вечным покоем";
+
+        mainPage.checkBackHome()
+                .goToThePaintingSectionByClickingOnTheTextBelowThePhoto()
+                .goToTheAboveEternalPeaceInformationSection()
+                .getCurrentPageHtml();
+
+        String frontendDescription = mainPage.getPaintingDescriptionFromCurrentPage();
+
+        Map<String, Object> dbPainting = gatewayDb.getPaintingByTitle(museumTitle);
+        String dbDescription = (String) dbPainting.getOrDefault("description", "");
 
         assertThat(frontendDescription).isEqualTo(dbDescription);
     }

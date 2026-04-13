@@ -38,7 +38,13 @@ public class MainPage {
     private final SelenideElement inputSearch = $(".input");
     private final SelenideElement buttonSearch = $(".flex.justify-center button[type=\"button\"]");
     private final SelenideElement artistFotoDiv = $("a[href=\"/artist\"] .text-bold");
-    private final SelenideElement artistShishkin = $("a[href=\"/artist/49d40508-104f-76ce-8967-fdf1ebb8cf45\"] [data-testid=\"avatar\"]");
+    private final SelenideElement museumFotoDiv = $("a[href=\"/museum\"] .text-bold");
+    private final SelenideElement paintingFotoDiv = $("a[href=\"/painting\"] .text-bold");
+    private final SelenideElement artistShishkin = $("a[href=\"/artist/49d40508-104f-76ce-8967-fdf1ebb8cf45\"] .flex-auto");
+    private final SelenideElement tretyakovGallery = $("a[href=\"/museum/43280d5b-3b78-5453-8380-5f226cb4dd5a\"] .text-center");
+    private final SelenideElement aboveEternalPeace = $("a[href=\"/painting/4a370c8c-9450-ff00-9eeb-a1d0b5c3d85b\"] .text-center");
+    private final SelenideElement paintingChack = $("div.m-4 div.m-4");
+    private final SelenideElement noContent = $(".text-xl");
 
 
     @Step("Переход в форму авторизации")
@@ -183,6 +189,30 @@ public class MainPage {
         return this;
     }
 
+    @Step("Проверка корректности работы поиска по картине")
+    public MainPage testingTheSearchByImage(String value) {
+        aboveEternalPeace.shouldBe(visible).shouldHave(text(value));
+        return this;
+    }
+
+    @Step("Проверка отсутствия данных")
+    public MainPage testingNoComtent(String value) {
+        noContent.shouldBe(visible).shouldHave(text(value));
+        return this;
+    }
+
+    @Step("Проверка корректности работы поиска по музею")
+    public MainPage testingTheSearchByMuseum(String value) {
+        tretyakovGallery.shouldBe(visible).shouldHave(text(value));
+        return this;
+    }
+
+    @Step("Проверка корректности работы поиска по художнику")
+    public MainPage testingTheSearchByArtist(String value) {
+        artistShishkin.shouldBe(visible).shouldHave(text(value));
+        return this;
+    }
+
     @Step("Обновление профиля")
     public MainPage updateYourProfile() {
         updatProfile.click();
@@ -212,9 +242,37 @@ public class MainPage {
         return this;
     }
 
+    @Step("Переход в раздел музеи по тексту под фото")
+    public MainPage goToTheMuseumSectionByClickingOnTheTextBelowThePhoto() {
+        museumFotoDiv.click();
+
+        return this;
+    }
+
+    @Step("Переход в раздел картины по тексту под фото")
+    public MainPage goToThePaintingSectionByClickingOnTheTextBelowThePhoto() {
+        paintingFotoDiv.click();
+
+        return this;
+    }
+
     @Step("Переход в раздел информации по Шишкину")
     public MainPage goToTheShishkinInformationSection() {
         artistShishkin.click();
+
+        return this;
+    }
+
+    @Step("Переход в раздел информации по Третьяковке")
+    public MainPage goToTheTretyakovGalleryInformationSection() {
+        tretyakovGallery.click();
+
+        return this;
+    }
+
+    @Step("Переход в раздел информации по картине Над вечным покоем")
+    public MainPage goToTheAboveEternalPeaceInformationSection() {
+        aboveEternalPeace.click();
 
         return this;
     }
@@ -229,8 +287,14 @@ public class MainPage {
         return $("section.grid p.col-span-2").getText();
     }
 
-    @Step("Копирование информации о художнике")
-    public String copyArtistDescription() {
-        return $("section.grid p.col-span-2").getText();
+    @Step("Получение описания музея с текущей страницы")
+    public String getMuseumDescriptionFromCurrentPage() {
+        return $x("//div[text()=\"Государственная Третьяковская галерея — российский государственный художественный музей в Москве, созданный на основе исторических коллекций купцов братьев Павла и Сергея Михайловичей Третьяковых; одно из крупнейших в мире собраний русского изобразительного искусства.\"]").getText();
     }
+
+    @Step("Получение описания картины с текущей страницы")
+    public String getPaintingDescriptionFromCurrentPage() {
+        return paintingChack.getText();
+    }
+
 }

@@ -44,7 +44,7 @@ public class LoginPage {
     @Step("Проверка ошибки авторизации с неправильными данными")
     public LoginPage checkLoginErrorTest() {
         errorLogin.shouldBe(visible)
-                .shouldHave(text("Bad credentials"), Duration.ofSeconds(10));
+                .shouldHave(text("Неверные учетные данные пользователя"), Duration.ofSeconds(10));
         return this;
     }
 

@@ -328,6 +328,40 @@ public class DatabaseHelper {
         }
     }
 
+    @Step("Получение информации по Музею")
+    public Map<String, Object> getMuseumByTitle(String title) {
+        if (databaseType != DatabaseType.GATEWAY) {
+            throw new UnsupportedOperationException("getArtistByName only works with GATEWAY database");
+        }
+        String sql = """
+                    SELECT description
+                     FROM `museum` 
+                    WHERE `title` = ?
+                """;
+        try {
+            return jdbcTemplate.queryForMap(sql, title);
+        } catch (Exception e) {
+            return Map.of();
+        }
+    }
+
+    @Step("Получение информации по Картине")
+    public Map<String, Object> getPaintingByTitle(String title) {
+        if (databaseType != DatabaseType.GATEWAY) {
+            throw new UnsupportedOperationException("getArtistByName only works with GATEWAY database");
+        }
+        String sql = """
+                    SELECT description
+                     FROM `painting` 
+                    WHERE `title` = ?
+                """;
+        try {
+            return jdbcTemplate.queryForMap(sql, title);
+        } catch (Exception e) {
+            return Map.of();
+        }
+    }
+
     @Step("Получение JdbcTemplate")
     public JdbcTemplate getJdbcTemplate() {
         return jdbcTemplate;
