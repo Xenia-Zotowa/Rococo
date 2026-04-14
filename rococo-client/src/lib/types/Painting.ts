@@ -14,6 +14,7 @@ export interface PaintingType extends IdDto{
 }
 
 export type NewPaintingType = {
+    id: string,
     artist: {
         id: string,
     },

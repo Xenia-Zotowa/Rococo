@@ -3,6 +3,7 @@ package test.helper;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.qameta.allure.Step;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -174,61 +175,6 @@ public class DatabaseHelper {
         }
     }
 
-    @Step("Вставка пользователя")
-    public UUID insertUser(String username, String password, boolean enabled) {
-        UUID userId = UUID.randomUUID();
-
-        if (databaseType == DatabaseType.AUTH) {
-            String sql = """
-                        INSERT INTO `user` (id, username, password, enabled, 
-                            account_non_expired, account_non_locked, credentials_non_expired)
-                        VALUES (UUID_TO_BIN(?), ?, ?, ?, ?, ?, ?)
-                    """;
-            jdbcTemplate.update(sql, userId, username, password, enabled, enabled, enabled, enabled);
-        } else if (databaseType == DatabaseType.GATEWAY) {
-            String sql = """
-                        INSERT INTO `user` (id, username, firstname, lastname)
-                        VALUES (UUID_TO_BIN(?), ?, ?, ?)
-                    """;
-            jdbcTemplate.update(sql, userId, username, "", "");
-        }
-
-        System.out.println("User inserted into " + databaseType.getDatabaseName() + " with ID: " + userId);
-        return userId;
-    }
-
-    @Step("Вставка Authority (только для AUTH)")
-    public void insertAuthority(UUID userId, String authority) {
-        if (databaseType != DatabaseType.AUTH) {
-            throw new UnsupportedOperationException("insertAuthority only works with AUTH database");
-        }
-        String sql = "INSERT INTO authority (user_id, authority) VALUES (UUID_TO_BIN(?), ?)";
-        jdbcTemplate.update(sql, userId, authority);
-        System.out.println("Authority inserted for user: " + userId);
-    }
-
-    @Step("Удаление пользователя по ID")
-    public void deleteUserById(UUID userId) {
-        String sql = "DELETE FROM `user` WHERE id = UUID_TO_BIN(?)";
-        int rows = jdbcTemplate.update(sql, userId);
-        if (rows > 0) {
-            System.out.println("User deleted with ID: " + userId);
-        } else {
-            System.out.println("User not found with ID: " + userId);
-        }
-    }
-
-    @Step("Удаление пользователя по имени")
-    public void deleteUserByUsername(String username) {
-        String sql = "DELETE FROM `user` WHERE username = ?";
-        int rows = jdbcTemplate.update(sql, username);
-        if (rows > 0) {
-            System.out.println("User deleted from " + databaseType.getDatabaseName() + ": " + username);
-        } else {
-            System.out.println("User not found in " + databaseType.getDatabaseName() + ": " + username);
-        }
-    }
-
     @Step("Получение пользователя по имени")
     public Map<String, Object> getUserByUsername(String username) {
         String sql;
@@ -249,25 +195,7 @@ public class DatabaseHelper {
         return jdbcTemplate.queryForMap(sql, username);
     }
 
-    @Step("Отключение пользователя (только для AUTH)")
-    public void disableUser(UUID userId) {
-        if (databaseType != DatabaseType.AUTH) {
-            throw new UnsupportedOperationException("disableUser only works with AUTH database");
-        }
-        String sql = "UPDATE `user` SET enabled = false WHERE id = UUID_TO_BIN(?)";
-        jdbcTemplate.update(sql, userId);
-        System.out.println("User disabled with ID: " + userId);
-    }
 
-    @Step("Включение пользователя (только для AUTH)")
-    public void enableUser(UUID userId) {
-        if (databaseType != DatabaseType.AUTH) {
-            throw new UnsupportedOperationException("enableUser only works with AUTH database");
-        }
-        String sql = "UPDATE `user` SET enabled = true WHERE id = UUID_TO_BIN(?)";
-        jdbcTemplate.update(sql, userId);
-        System.out.println("User enabled with ID: " + userId);
-    }
 
     @Step("Проверка существования пользователя")
     public boolean userExists(String username) {
@@ -276,40 +204,6 @@ public class DatabaseHelper {
         return count != null && count > 0;
     }
 
-    public List<String> getUserAuthorities(UUID userId) {
-        if (databaseType != DatabaseType.AUTH) {
-            throw new UnsupportedOperationException("getUserAuthorities only works with AUTH database");
-        }
-        String sql = "SELECT authority FROM authority WHERE user_id = UUID_TO_BIN(?)";
-        return jdbcTemplate.queryForList(sql, String.class, userId);
-    }
-
-
-    public void updateUserFirstAndLastName(String username, String firstname, String lastname) {
-        if (databaseType != DatabaseType.GATEWAY) {
-            throw new UnsupportedOperationException("updateUserFirstAndLastName only works with GATEWAY database");
-        }
-        String sql = "UPDATE `user` SET firstname = ?, lastname = ? WHERE username = ?";
-        jdbcTemplate.update(sql, firstname, lastname, username);
-        System.out.println("User profile updated in gateway: " + username + " -> " + firstname + " " + lastname);
-    }
-
-    @Step("Получение профиля пользователя (только для GATEWAY)")
-    public Map<String, Object> getUserProfile(String username) {
-        if (databaseType != DatabaseType.GATEWAY) {
-            throw new UnsupportedOperationException("getUserProfile only works with GATEWAY database");
-        }
-        String sql = """
-                    SELECT firstname, lastname, avatar 
-                    FROM `user` 
-                    WHERE username = ?
-                """;
-        try {
-            return jdbcTemplate.queryForMap(sql, username);
-        } catch (Exception e) {
-            return Map.of();
-        }
-    }
 
     @Step("Получение информации по Художнику")
     public Map<String, Object> getArtistByName(String name) {
@@ -324,6 +218,27 @@ public class DatabaseHelper {
         try {
             return jdbcTemplate.queryForMap(sql, name);
         } catch (Exception e) {
+            return Map.of();
+        }
+    }
+
+    @Step("Получение информации по Музею по названию")
+    public Map<String, Object> getMuseumByName(String title) {
+        if (databaseType != DatabaseType.GATEWAY) {
+            throw new UnsupportedOperationException("getMuseumByTitle only works with GATEWAY database");
+        }
+        String sql = """
+                SELECT id, title, description, geo, photo
+                FROM museum 
+                WHERE title = ?
+                """;
+        try {
+            return jdbcTemplate.queryForMap(sql, title);
+        } catch (EmptyResultDataAccessException e) {
+            System.err.println("Museum not found: " + title);
+            return Map.of();
+        } catch (Exception e) {
+            System.err.println("Error getting museum by title: " + e.getMessage());
             return Map.of();
         }
     }
@@ -359,6 +274,27 @@ public class DatabaseHelper {
         try {
             return jdbcTemplate.queryForMap(sql, title);
         } catch (Exception e) {
+            return Map.of();
+        }
+    }
+
+    @Step("Получение информации по Художнику по имени")
+    public Map<String, Object> getArtistByN(String name) {
+        if (databaseType != DatabaseType.GATEWAY) {
+            throw new UnsupportedOperationException("getArtistByName only works with GATEWAY database");
+        }
+        String sql = """
+                SELECT id, name, biography, photo
+                FROM artist 
+                WHERE name = ?
+                """;
+        try {
+            return jdbcTemplate.queryForMap(sql, name);
+        } catch (EmptyResultDataAccessException e) {
+            System.err.println("Artist not found: " + name);
+            return Map.of();
+        } catch (Exception e) {
+            System.err.println("Error getting artist by name: " + e.getMessage());
             return Map.of();
         }
     }

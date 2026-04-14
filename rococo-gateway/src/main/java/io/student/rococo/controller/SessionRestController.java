@@ -24,8 +24,8 @@ public class SessionRestController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         return ResponseEntity.ok(SessionDTO.builder()
-                .id(java.util.UUID.fromString(jwt.getClaimAsString("jti")))
-                .userId(java.util.UUID.fromString(jwt.getClaimAsString("sub")))
+                .id(jwt.getClaimAsString("jti"))
+                .userId(jwt.getClaimAsString("sub"))
                 .createdAt(String.valueOf(System.currentTimeMillis()))
                 .expiresAt(String.valueOf(System.currentTimeMillis() + 3600000))
                 .build());
@@ -37,9 +37,9 @@ public class SessionRestController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         String email = jwt.getClaimAsString("email");
+        String username = jwt.getClaimAsString("sub");
         return ResponseEntity.ok(UserDTO.builder()
-                .id(java.util.UUID.fromString(jwt.getClaimAsString("sub")))
-                .username(jwt.getClaimAsString("preferred_username"))
+                .username(username)
                 .email(email)
                 .build());
     }

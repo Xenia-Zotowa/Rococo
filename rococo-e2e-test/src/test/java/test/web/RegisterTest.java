@@ -56,6 +56,19 @@ public class RegisterTest {
         closeWebDriver();
 
     }
+    @Test
+    @DisplayName("Регистрация с несовпадающими паролями")
+    public void registrationWithMismatchedPasswords() {
+
+        mainPage.switchingToTheAuthorizationForm();
+        sleep(1000);
+        loginPage.switchingToTheAuthorizationForm();
+        sleep(1000);
+        registerPage.registerUser(randomUsername, "123", "321")
+                .errorePasswordRegister();
+        closeWebDriver();
+    }
+
 
     @Test
     @DisplayName("Регистрация существующего пользователя")
@@ -67,19 +80,6 @@ public class RegisterTest {
         sleep(1000);
         registerPage.registerUser("admin", "123", "123")
                 .erroreUsernameRegister();
-        closeWebDriver();
-    }
-
-    @Test
-    @DisplayName("Регистрация с несовпадающими паролями")
-    public void registrationWithMismatchedPasswords() {
-
-        mainPage.switchingToTheAuthorizationForm();
-        sleep(1000);
-        loginPage.switchingToTheAuthorizationForm();
-        sleep(1000);
-        registerPage.registerUser(randomUsername, "123", "321")
-                .errorePasswordRegister();
         closeWebDriver();
     }
 

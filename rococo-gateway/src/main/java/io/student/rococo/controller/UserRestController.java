@@ -31,8 +31,8 @@ public class UserRestController {
 
     @PatchMapping("/user")
     public ResponseEntity<io.student.rococo.dto.UserDTO> updateUser(Authentication auth, @Valid @RequestBody io.student.rococo.dto.UserPatchDTO patch) {
-        var userId = UUID.fromString(((org.springframework.security.oauth2.jwt.Jwt) auth.getPrincipal()).getSubject());
-        var updatedUser = userService.update(userId, patch);
+        var username = ((org.springframework.security.oauth2.jwt.Jwt) auth.getPrincipal()).getSubject();
+        var updatedUser = userService.update(username, patch);
         return ResponseEntity.ok(updatedUser);
     }
 }

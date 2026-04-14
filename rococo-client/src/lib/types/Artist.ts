@@ -7,6 +7,7 @@ export interface ArtistType extends IdDto {
 }
 
 export type NewArtistType = {
+    id: string,
     name: string,
     photo: string | ArrayBuffer | null,
     biography: string,

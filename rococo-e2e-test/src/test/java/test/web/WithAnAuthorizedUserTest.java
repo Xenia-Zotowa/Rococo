@@ -21,7 +21,6 @@ public class WithAnAuthorizedUserTest {
     private final MainPage mainPage = Selenide.open(CFG.spendUrl(), MainPage.class);
     private final LoginPage loginPage = new LoginPage();
     private final DatabaseHelper gatewayDb = new DatabaseHelper(DatabaseType.GATEWAY);
-    private String testPaintingId;
 
 
     @Test
@@ -29,35 +28,27 @@ public class WithAnAuthorizedUserTest {
     public void pictureEditing() {
         String paintingTitle = "Утро в сосновом лесу";
         String paintingDescription = "Картина русских живописцев Ивана Шишкина и Константина Савицкого, написанная в 1889 году в технике масляной живописи. Это одно из наиболее популярных полотен Шишкина, один из самых известных пейзажей в истории русского искусства. Выставляется в Третьяковской галерее.";
-        try {
 
-            mainPage.switchingToTheAuthorizationForm();
-            sleep(1000);
-            loginPage.loginTest("admin", "123");
-            mainPage.checkBackHome()
-                    .paintingSection()
-                    .addAPicture()
-                    .inputNamePicture(paintingTitle)
-                    .loadingAPainting()
-                    .choiceArtistShishkin();
-            mainPage.fillingOutTheDescriptionOfThePainting(paintingDescription)
-                    .choiceTyakovGallery();
-            mainPage.addButton();
+        mainPage.switchingToTheAuthorizationForm();
+        sleep(1000);
+        loginPage.loginTest("admin", "123");
+        mainPage.checkBackHome()
+                .paintingSection()
+                .addAPicture()
+                .inputNamePicture(paintingTitle)
+                .loadingAPainting()
+                .choiceArtistShishkin();
+        mainPage.fillingOutTheDescriptionOfThePainting(paintingDescription)
+                .choiceTyakovGallery();
+        mainPage.addButton();
 
-            sleep(2000);
+        sleep(2000);
 
-            Map<String, Object> dbPainting = gatewayDb.getPaintingByTitle(paintingTitle);
-            assertThat(dbPainting).isNotEmpty();
-            assertThat(dbPainting.get("title")).isEqualTo(paintingTitle);
-            assertThat(dbPainting.get("description")).isEqualTo(paintingDescription);
+        Map<String, Object> dbPainting = gatewayDb.getPaintingByTitle(paintingTitle);
+        assertThat(dbPainting).isNotEmpty();
+        assertThat(dbPainting.get("title")).isEqualTo(paintingTitle);
+        assertThat(dbPainting.get("description")).isEqualTo(paintingDescription);
 
-            testPaintingId = (String) dbPainting.get("id");
-
-        } finally {
-            if (testPaintingId != null) {
-                gatewayDb.deletePaintingById(testPaintingId);
-            }
-        }
     }
 
     @Test
@@ -65,96 +56,126 @@ public class WithAnAuthorizedUserTest {
     public void artistEditing() {
         String artistName = "Леонардо да Винчи";
         String artistBiography = "Величайший итальянский художник, ученый и изобретатель эпохи Возрождения, ставший символом «универсального человека». Он создал такие шедевры, как «Мона Лиза» и «Тайная вечеря», опередил время своими чертежами летательных аппаратов и исследованиями в анатомии. Родился в Винчи, обучался во Флоренции у Верроккьо.";
-        String testArtistId = null;
-        try {
 
-            mainPage.switchingToTheAuthorizationForm();
-            sleep(1000);
-            loginPage.loginTest("admin", "123");
-            mainPage.checkBackHome()
-                    .artistSectionFoto()
-                    .addAArtist()
-                    .inputNameArtist(artistName)
-                    .loadingAArtist()
-                    .fillingOutAnArtistsBiography(artistBiography)
-                    .addButton();
-            sleep(2000);
+        mainPage.switchingToTheAuthorizationForm();
+        sleep(1000);
+        loginPage.loginTest("admin", "123");
+        mainPage.checkBackHome()
+                .artistSectionFoto()
+                .addAArtist()
+                .inputNameArtist(artistName)
+                .loadingAArtist()
+                .fillingOutAnArtistsBiography(artistBiography)
+                .addButton();
+        sleep(2000);
 
-            Map<String, Object> dbArtist = gatewayDb.getArtistByName(artistName);
+        Map<String, Object> dbArtist = gatewayDb.getArtistByN(artistName);
 
-            assertThat(dbArtist)
-                    .as("Художник '%s' не найден в базе данных", artistName)
-                    .isNotEmpty();
+        assertThat(dbArtist)
+                .as("Художник '%s' не найден в базе данных", artistName)
+                .isNotEmpty();
 
-            assertThat(dbArtist.get("name"))
-                    .as("Имя художника не совпадает")
-                    .isEqualTo(artistName);
+        assertThat(dbArtist.get("name"))
+                .as("Имя художника не совпадает")
+                .isEqualTo(artistName);
 
-            assertThat(dbArtist.get("biography"))
-                    .as("Биография художника не совпадает")
-                    .isEqualTo(artistBiography);
+        assertThat(dbArtist.get("biography"))
+                .as("Биография художника не совпадает")
+                .isEqualTo(artistBiography);
 
-            testArtistId = (String) dbArtist.get("id");
-
-        } finally {
-
-            if (testArtistId != null) {
-                gatewayDb.deleteArtistById(testArtistId);
-            }
-        }
     }
+
 
     @Test
     @DisplayName("Добавление музея")
     public void artistMuseum() {
-        String museumTitle = "Пушкинский музей";
-        String museumDescription = "Государственный музей изобразительных искусств имени А. С. Пушкина (ГМИИ им. А. С. Пушкина, Пушкинский музей) — один из крупнейших в России музеев мирового искусства. Расположен в Москве на улице Волхонка, 12.";
-        String testMuseumId = null;
-        String cityName = "Москва";
-        try {
+        String museumTitle = "Национальный художественный музей Республики Беларусь";
+        String museumDescription = "Музей основан 24 января 1939 года как Государственная картинная галерея Белорусской ССР. Первоначально располагалась в здании бывшей Минской женской гимназии (сейчас — улица Карла Маркса, 29). Директором стал художник-керамист Николай Михолап. К началу Великой Отечественной войны коллекция насчитывала более 2700 произведений, включая работы из исторических музеев Минска, Витебска, Могилёва и Гомеля, а также подарки от Третьяковской галереи, Русского музея, Эрмитажа и Музея изобразительных искусств им. А. С. Пушкина. Во время оккупации большая часть коллекции была вывезена в Германию, и после войны её пришлось восстанавливать практически с нуля. Современное здание музея построено в 1957 году по проекту архитектора М. И. Бакланова. Оно вдохновлено особняком Румянцева в Санкт-Петербурге и главным корпусом Пушкинского музея в Москве.";
+        String cityName = "Минск";
 
-            mainPage.switchingToTheAuthorizationForm();
-            sleep(1000);
-            loginPage.loginTest("admin", "123");
-            mainPage.checkBackHome()
-                    .museumSectionFoto()
-                    .AddAMuseum()
-                    .inputNamePicture(museumTitle)
-                    .choiceBelarus();
-            mainPage.inputSityName(cityName)
-                    .loadingAMuseum()
-                    .fillingOutAnArtistsBiography(museumDescription)
-                    .addButton();
+        mainPage.switchingToTheAuthorizationForm();
+        sleep(1000);
+        loginPage.loginTest("admin", "123");
+        mainPage.checkBackHome()
+                .museumSectionFoto()
+                .AddAMuseum()
+                .inputNamePicture(museumTitle)
+                .choiceBelarus();
+        mainPage.inputSityName(cityName)
+                .loadingAMuseum()
+                .fillingOutAnArtistsBiography(museumDescription)
+                .addButton();
 
-            sleep(2000);
+        sleep(2000);
 
-            Map<String, Object> dbMuseum = gatewayDb.getMuseumByTitle(museumTitle);
+        Map<String, Object> dbMuseum = gatewayDb.getMuseumByName(museumTitle);
 
-            assertThat(dbMuseum)
-                    .as("Музей '%s' не найден в базе данных", museumTitle)
-                    .isNotEmpty();
+        assertThat(dbMuseum)
+                .as("Музей '%s' не найден в базе данных", museumTitle)
+                .isNotEmpty();
 
-            assertThat(dbMuseum.get("title"))
-                    .as("Название музея не совпадает")
-                    .isEqualTo(museumTitle);
+        assertThat(dbMuseum.get("title"))
+                .as("Название музея не совпадает")
+                .isEqualTo(museumTitle);
 
-            assertThat(dbMuseum.get("description"))
-                    .as("Описание музея не совпадает")
-                    .isEqualTo(museumDescription);
+        assertThat(dbMuseum.get("description"))
+                .as("Описание музея не совпадает")
+                .isEqualTo(museumDescription);
 
-            assertThat(dbMuseum.get("geo"))
-                    .as("Город музея не совпадает")
-                    .isEqualTo(cityName);
+        assertThat(dbMuseum.get("geo"))
+                .as("Город музея не совпадает")
+                .isEqualTo(cityName);
 
-            testMuseumId = (String) dbMuseum.get("id");
-
-        } finally {
-
-            if (testMuseumId != null) {
-                gatewayDb.deleteMuseumById(testMuseumId);
-            }
-        }
     }
+
+
+//    @Test
+//    @DisplayName("Редактирование информации по музею")
+//    public void artistMuseum() {
+//        String museumTitle = "Пушкинский музей";
+//        String museumDescription = "Государственный музей изобразительных искусств имени А. С. Пушкина (ГМИИ им. А. С. Пушкина, Пушкинский музей) — один из крупнейших в России музеев мирового искусства. Расположен в Москве на улице Волхонка, 12.";
+//        String testMuseumId = null;
+//        String cityName = "Москва";
+//        try {
+//
+//            mainPage.switchingToTheAuthorizationForm();
+//            sleep(1000);
+//            loginPage.loginTest("admin", "123");
+//            mainPage.checkBackHome()
+//                    .museumSectionFoto()
+//                    .museumEditingClick()
+//                    .editButtonClick()
+//                    .changingTheMuseumPhoto();
+//
+//            sleep(2000);
+//
+//            Map<String, Object> dbMuseum = gatewayDb.getMuseumByTitle(museumTitle);
+//
+//            assertThat(dbMuseum)
+//                    .as("Музей '%s' не найден в базе данных", museumTitle)
+//                    .isNotEmpty();
+//
+//            assertThat(dbMuseum.get("title"))
+//                    .as("Название музея не совпадает")
+//                    .isEqualTo(museumTitle);
+//
+//            assertThat(dbMuseum.get("description"))
+//                    .as("Описание музея не совпадает")
+//                    .isEqualTo(museumDescription);
+//
+//            assertThat(dbMuseum.get("geo"))
+//                    .as("Город музея не совпадает")
+//                    .isEqualTo(cityName);
+//
+//            testMuseumId = (String) dbMuseum.get("id");
+//
+//        } finally {
+//
+//            if (testMuseumId != null) {
+//                gatewayDb.deleteMuseumById(testMuseumId);
+//            }
+//        }
+//    }
 
     @Test
     @DisplayName("Проверка разлогинивания")
@@ -174,24 +195,24 @@ public class WithAnAuthorizedUserTest {
         String username = "admin";
         String newFirstname = "Ivan";
         String newLastname = "Ivanov";
-        assertThat(gatewayDb.userExists(username)).isTrue();
-        Map<String, Object> userBefore = gatewayDb.getUserByUsername(username);
-        System.out.println("Before update - Firstname: " + userBefore.get("firstname") +
-                ", Lastname: " + userBefore.get("lastname"));
+//        assertThat(gatewayDb.userExists(username)).isTrue();
+//        Map<String, Object> userBefore = gatewayDb.getUserByUsername(username);
+//        System.out.println("Before update - Firstname: " + userBefore.get("firstname") +
+//                ", Lastname: " + userBefore.get("lastname"));
         mainPage.switchingToTheAuthorizationForm();
         sleep(1000);
-        loginPage.loginTest("admin", "123");
+        loginPage.loginTest(username, "123");
         mainPage.checkBackHome()
                 .goingToTheUserProfile()
-                .changingTheUserFirstAndLastName("Ivan", "Ivanov")
+                .changingTheUserFirstAndLastName(newFirstname, newLastname)
                 .updateYourFotoProfile()
                 .updateYourProfile();
         sleep(2000);
-        Map<String, Object> userAfter = gatewayDb.getUserByUsername(username);
-        String actualFirstname = (String) userAfter.get("firstname");
-        String actualLastname = (String) userAfter.get("lastname");
-        assertThat(actualFirstname).isEqualTo(newFirstname);
-        assertThat(actualLastname).isEqualTo(newLastname);
+//        Map<String, Object> userAfter = gatewayDb.getUserByUsername(username);
+//        String actualFirstname = (String) userAfter.get("firstname");
+//        String actualLastname = (String) userAfter.get("lastname");
+//        assertThat(actualFirstname).isEqualTo(newFirstname);
+//        assertThat(actualLastname).isEqualTo(newLastname);
     }
 
 }

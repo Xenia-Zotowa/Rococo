@@ -40,7 +40,7 @@
 		validateForm(name, biography);
 
 		if(!Object.values($artistsFormErrorStore).some(v => v.length > 0)) {
-			const res = await apiClient.addArtist({name, biography, photo});
+			const res = await apiClient.addArtist({id: crypto.randomUUID(), name, biography, photo});
 
 			if($modalStore[0].response) {
 				$modalStore[0].response(res);

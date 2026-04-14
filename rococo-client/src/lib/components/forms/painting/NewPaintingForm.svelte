@@ -46,15 +46,18 @@
 		if(!Object.values($paintingFormErrorStore).some(v => v.length > 0)) {
 			content = await blobToBase64(file) as string;
 			const res = await apiClient.addPainting({
+				id: crypto.randomUUID(),
 				title,
 				description,
 				content,
 				artist: {
-					id: data?.id ?? authorId,
+					id: data?.id ? data.id : authorId,
 				},
 				museum: {
 					id: museumId,
 				}});
+
+
 
 			if($modalStore[0].response) {
 				$modalStore[0].response(res);

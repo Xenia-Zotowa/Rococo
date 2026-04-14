@@ -43,6 +43,7 @@
 		if(!Object.values($museumFormErrorStore).some(v => v.length > 0)) {
 			photo = await blobToBase64(file) as string;
 			const res = await apiClient.addMuseum({
+				id: crypto.randomUUID(),
 				title,
 				description,
 				photo,

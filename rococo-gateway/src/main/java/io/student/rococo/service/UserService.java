@@ -10,10 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 public class UserService {
 
+    private static final Logger logger = Logger.getLogger(UserService.class.getName());
     private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
@@ -25,8 +28,7 @@ public class UserService {
      */
     public UserDTO fromJwt(Jwt jwt) {
         var builder = UserDTO.builder()
-                .id(getUUID(jwt.getClaims(), "sub"))
-                .username(jwt.getClaimAsString("preferred_username"));
+                .username(jwt.getClaimAsString("sub"));
 
         String email = jwt.getClaimAsString("email");
         if (email != null) {
@@ -42,12 +44,21 @@ public class UserService {
      * Обновляет данные пользователя.
      */
     @Transactional
-    public UserDTO update(UUID id, io.student.rococo.dto.UserPatchDTO patch) {
-        UserEntity user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found", id));
+    public UserDTO update(String username, io.student.rococo.dto.UserPatchDTO patch) {
+        UserEntity user = userRepository.findByUsername(username)
+                .orElseGet(() -> {
+                    UserEntity newUser = new UserEntity();
+                    newUser.setUsername(username);
+                    newUser.setEmail(patch.getEmail()); // Assuming email from patch is valid if new
+                    newUser.setEmailVerified(true);
+                    return newUser;
+                });
 
         if (patch.getUsername() != null) user.setUsername(patch.getUsername());
         if (patch.getEmail() != null) user.setEmail(patch.getEmail());
+        if (patch.getFirstname() != null) user.setFirstname(patch.getFirstname());
+        if (patch.getLastname() != null) user.setLastname(patch.getLastname());
+        if (patch.getAvatar() != null) user.setAvatar(patch.getAvatar().getBytes());
 
         userRepository.save(user);
 
@@ -55,6 +66,9 @@ public class UserService {
                 .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
+                .firstname(user.getFirstname())
+                .lastname(user.getLastname())
+                .avatar(user.getAvatar())
                 .emailVerified(String.valueOf(user.isEmailVerified()))
                 .build();
     }
@@ -65,7 +79,8 @@ public class UserService {
             if (claim != null) {
                 return UUID.fromString(claim.toString());
             }
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Failed to parse UUID from claim: " + claimName, e);
         }
         return null;
     }

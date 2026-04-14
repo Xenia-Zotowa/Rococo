@@ -14,6 +14,7 @@ export interface MuseumType extends IdDto {
 }
 
 export type NewMuseumType = {
+    id: string,
     title: string,
     description: string,
     photo: string,

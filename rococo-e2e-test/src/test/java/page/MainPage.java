@@ -29,9 +29,9 @@ public class MainPage {
     private final SelenideElement toggleLight = $("[title='Toggle Light Mode']");
     private final SelenideElement toggleDark = $("[title='Toggle Dark Mode']");
     private final SelenideElement avatar = $(".avatar");
-    private final SelenideElement exitButton = $(".btn.variant-ghost");
+    private final SelenideElement exitButton = $(".w-full.text-left.text-error-500");
     private final SelenideElement firstnameInput = $("input[name='firstname']");
-    private final SelenideElement surnameInput = $("input[name='surname']");
+    private final SelenideElement surnameInput = $("input[name='lastname']");
     private final SelenideElement updatProfile = $(".btn.variant-filled-primary");
     private final SelenideElement fotoProfile = $("input[name='content']");
     private final SelenideElement title = $("#page-content .flex.items-center");
@@ -48,13 +48,16 @@ public class MainPage {
     private final SelenideElement inputNamePicture = $("input[name=\"title\"]");
     private final SelenideElement choiceArtistShishkin = $(".select option[value=\"49d40508-104f-76ce-8967-fdf1ebb8cf45\"]");
     private final SelenideElement choicetretyakovGallery = $(".select option[value=\"43280d5b-3b78-5453-8380-5f226cb4dd5a\"]");
-    private final SelenideElement choiceBelarus = $(".select option[value=\"11f137f0-aa57-bd0e-8529-661b5e460f2e\"]");
+    private final SelenideElement choiceBelarus = $("option[value='11f13840-1c78-1a28-948b-66c967e2727d']");
     private final SelenideElement descriptionPicture = $(".textarea");
     private final SelenideElement addButton = $(".btn.variant-filled-primary");
     private final SelenideElement inputArtist = $("input[name=\"name\"]");
     private final SelenideElement fotoArtist = $("input[name=\"photo\"]");
     private final SelenideElement inputBiography = $(".textarea");
     private final SelenideElement inputSity = $("input[name=\"city\"]");
+    private final SelenideElement editButton = $("button[data-testid=\"edit-museum\"]");
+    private final SelenideElement museumEditing = $("a[href=\"/museum/43280d5b-3b78-5453-8380-5f226cb4dd5a\"] .max-w-full");
+    private final SelenideElement convertToBasicLatin = $x("//button[text()=\"Редактировать профиль\"]");
 
 
     @Step("Переход в форму авторизации")
@@ -232,6 +235,7 @@ public class MainPage {
     @Step("Переход в профиль пользователя")
     public MainPage goingToTheUserProfile() {
         avatar.click();
+        convertToBasicLatin.click();
         return this;
     }
 
@@ -275,7 +279,6 @@ public class MainPage {
     public MainPage updateYourFotoProfile() {
         File imageFile = new File("src/test/resources/images/kapi.jpg");
         fotoProfile.uploadFile(imageFile);
-
         return this;
     }
 
@@ -283,7 +286,6 @@ public class MainPage {
     public MainPage loadingAPainting() {
         File imageFile = new File("src/test/resources/images/morningInAPineForest.jpg");
         fotoProfile.uploadFile(imageFile);
-
         return this;
     }
 
@@ -291,15 +293,20 @@ public class MainPage {
     public MainPage loadingAArtist() {
         File imageFile = new File("src/test/resources/images/Leonardo_da_Vinci.jpg");
         fotoArtist.uploadFile(imageFile);
+        return this;
+    }
 
+    @Step("Изменение фото музея")
+    public MainPage changingTheMuseumPhoto() {
+        File imageFile = new File("src/test/resources/images/tretyakovka_YB_1.jpg");
+        fotoArtist.uploadFile(imageFile);
         return this;
     }
 
     @Step("Загрузка фото музея")
     public MainPage loadingAMuseum() {
-        File imageFile = new File("src/test/resources/images/PushkinMuseum.jpg");
+        File imageFile = new File("src/test/resources/images/Share.jpg");
         fotoArtist.uploadFile(imageFile);
-
         return this;
     }
 
@@ -307,56 +314,48 @@ public class MainPage {
     public MainPage search(String value) {
         inputSearch.setValue(value);
         buttonSearch.click();
-
         return this;
     }
 
     @Step("Ввод названия")
     public MainPage inputNamePicture(String value) {
         inputNamePicture.setValue(value);
-
         return this;
     }
 
     @Step("Переход в раздел художники по тексту под фото")
     public MainPage goToTheArtistsSectionByClickingOnTheTextBelowThePhoto() {
         artistFotoDiv.click();
-
         return this;
     }
 
     @Step("Переход в раздел музеи по тексту под фото")
     public MainPage goToTheMuseumSectionByClickingOnTheTextBelowThePhoto() {
         museumFotoDiv.click();
-
         return this;
     }
 
     @Step("Переход в раздел картины по тексту под фото")
     public MainPage goToThePaintingSectionByClickingOnTheTextBelowThePhoto() {
         paintingFotoDiv.click();
-
         return this;
     }
 
     @Step("Переход в раздел информации по Шишкину")
     public MainPage goToTheShishkinInformationSection() {
         artistShishkin.click();
-
         return this;
     }
 
     @Step("Переход в раздел информации по Третьяковке")
     public MainPage goToTheTretyakovGalleryInformationSection() {
         tretyakovGallery.click();
-
         return this;
     }
 
     @Step("Переход в раздел информации по картине Над вечным покоем")
     public MainPage goToTheAboveEternalPeaceInformationSection() {
         aboveEternalPeace.click();
-
         return this;
     }
 
@@ -394,8 +393,20 @@ public class MainPage {
 
     @Step("Выбор Белорусии")
     public String choiceBelarus() {
+        choiceBelarus.scrollTo();
         choiceBelarus.click();
         return choiceBelarus.getText();
     }
 
+    @Step("Редактирование")
+    public MainPage editButtonClick() {
+        editButton.click();
+        return this;
+    }
+
+    @Step("Редактирование музея")
+    public MainPage museumEditingClick() {
+        museumEditing.click();
+        return this;
+    }
 }

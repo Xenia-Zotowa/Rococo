@@ -66,9 +66,8 @@
 
         validateForm(editFirstname, editLastname);
 
-        if(!Object.values($userFormErrorStore).some(v => v.length > 0) && id && username) {
+    if(!Object.values($userFormErrorStore).some(v => (v as string).length > 0) && username) {
             const res = await apiClient.updateUser({
-                id,
                 username,
                 firstname: editFirstname,
                 lastname: editLastname,
@@ -98,7 +97,7 @@
 
 </script>
 
-{#if $modalStore[0] && id}
+{#if $modalStore[0] && username}
     <FormWrapper modalTitle={$modalStore[0].title ?? ""} modalBody={$modalStore[0].body ?? ""}>
         <form class="modal-form space-y-4 relative" on:submit={onSubmit}>
             <div class="text-right absolute right-0">
