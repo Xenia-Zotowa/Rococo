@@ -20,11 +20,24 @@
 
     let files: FileList;
 
-    let id = $sessionStore.user?.id;
-    let firstname = $sessionStore.user?.firstname ?? "";
-    let lastname = $sessionStore.user?.lastname ?? "";
-    let username = $sessionStore.user?.username;
-    let avatar = $sessionStore.user?.avatar;
+    // Reactive declarations to ensure we always use the latest session data
+    $: id = $sessionStore.user?.id;
+    $: username = $sessionStore.user?.username;
+    $: firstname = $sessionStore.user?.firstname ?? "";
+    $: lastname = $sessionStore.user?.lastname ?? "";
+    $: avatar = $sessionStore.user?.avatar ?? "";
+
+    // Local state for form editing to avoid mutating sessionStore directly while typing
+    let editFirstname = firstname;
+    let editLastname = lastname;
+    let editAvatar = avatar;
+
+    // Sync local state when session updates (e.g., after successful save)
+    $: {
+        editFirstname = firstname;
+        editLastname = lastname;
+        editAvatar = avatar;
+    }
 
     userFormErrorStore.set({
         firstname: "",
@@ -35,28 +48,45 @@
     const onSubmit = async (evt: SubmitEvent) => {
         evt.preventDefault();
         const file = files?.[0];
+
         if(file) {
-            artistsFormErrorStore.update((prevState) => {
-                return {
-                    ...prevState,
-                    photo: validateImage(file),
-                }
-            });
+            const validation = validateImage(file);
+            if (validation) {
+                artistsFormErrorStore.update((prevState) => {
+                    return {
+                        ...prevState,
+                        photo: validation,
+                    }
+                });
+                return;
+            }
             avatar = await blobToBase64(file) as string;
+            editAvatar = avatar;
         }
-        validateForm(firstname, lastname);
+
+        validateForm(editFirstname, editLastname);
+
         if(!Object.values($userFormErrorStore).some(v => v.length > 0) && id && username) {
             const res = await apiClient.updateUser({
                 id,
                 username,
-                firstname,
-                lastname,
-                avatar,
-                });
-            if($modalStore[0].response) {
-                $modalStore[0].response(res);
+                firstname: editFirstname,
+                lastname: editLastname,
+                avatar: editAvatar,
+            });
+
+            if(res.error) {
+                toastStore.error(res.error);
+                return;
             }
-            modalStore.close();
+
+            if(res.data) {
+                // The updateProfileCallback in HeaderMenu handles updating the sessionStore
+                if($modalStore[0]?.response) {
+                    $modalStore[0].response(res.data);
+                }
+                modalStore.close();
+            }
         }
     }
 
@@ -76,7 +106,7 @@
                     Выйти
                 </button>
             </div>
-            <Avatar class="mx-auto" src={avatar} width="w-48" rounded="rounded-full" />
+            <Avatar class="mx-auto" src={editAvatar} width="w-48" rounded="rounded-full" />
             <h4 class="text-center">@{username}</h4>
             <ImageInput
                     label="Обновить фото профиля"
@@ -88,14 +118,14 @@
                     label="Имя"
                     name="firstname"
                     placeholder="Ваше имя..."
-                    bind:value={firstname}
+                    bind:value={editFirstname}
                     error={$userFormErrorStore.firstname}
             />
             <Input
                     label="Фамилия"
-                    name="surname"
+                    name="lastname"
                     placeholder="Ваша фамилия..."
-                    bind:value={lastname}
+                    bind:value={editLastname}
                     error={$userFormErrorStore.lastname}
             />
             <div class="text-center">

@@ -45,6 +45,16 @@ public class MainPage {
     private final SelenideElement aboveEternalPeace = $("a[href=\"/painting/4a370c8c-9450-ff00-9eeb-a1d0b5c3d85b\"] .text-center");
     private final SelenideElement paintingChack = $("div.m-4 div.m-4");
     private final SelenideElement noContent = $(".text-xl");
+    private final SelenideElement inputNamePicture = $("input[name=\"title\"]");
+    private final SelenideElement choiceArtistShishkin = $(".select option[value=\"49d40508-104f-76ce-8967-fdf1ebb8cf45\"]");
+    private final SelenideElement choicetretyakovGallery = $(".select option[value=\"43280d5b-3b78-5453-8380-5f226cb4dd5a\"]");
+    private final SelenideElement choiceBelarus = $(".select option[value=\"11f137f0-aa57-bd0e-8529-661b5e460f2e\"]");
+    private final SelenideElement descriptionPicture = $(".textarea");
+    private final SelenideElement addButton = $(".btn.variant-filled-primary");
+    private final SelenideElement inputArtist = $("input[name=\"name\"]");
+    private final SelenideElement fotoArtist = $("input[name=\"photo\"]");
+    private final SelenideElement inputBiography = $(".textarea");
+    private final SelenideElement inputSity = $("input[name=\"city\"]");
 
 
     @Step("Переход в форму авторизации")
@@ -57,6 +67,12 @@ public class MainPage {
     @Step("Проверка перехода на главную страницу")
     public MainPage checkBackHome() {
         homePage.shouldBe(visible);
+        return this;
+    }
+
+    @Step("Добавить")
+    public MainPage addButton() {
+        addButton.click();
         return this;
     }
 
@@ -123,6 +139,12 @@ public class MainPage {
         return this;
     }
 
+    @Step("Добавление художника")
+    public MainPage addAArtist() {
+        addAArtistButton.click();
+        return this;
+    }
+
     @Step("Проверка невидимости кнопки Добавить картинки")
     public MainPage checkAddAPicture() {
         addAPictureButton.shouldBe(hidden);
@@ -138,6 +160,12 @@ public class MainPage {
     @Step("Проверка невидимости кнопки Добавить музей")
     public MainPage checkAddAMuseum() {
         addAMuseumButton.shouldBe(hidden);
+        return this;
+    }
+
+    @Step("Добавить музей")
+    public MainPage AddAMuseum() {
+        addAMuseumButton.click();
         return this;
     }
 
@@ -173,6 +201,30 @@ public class MainPage {
         firstnameInput.setValue(firstname);
         surnameInput.clear();
         surnameInput.setValue(surname);
+        return this;
+    }
+
+    @Step("Заполнение описания картины")
+    public MainPage fillingOutTheDescriptionOfThePainting(String value) {
+        descriptionPicture.setValue(value);
+        return this;
+    }
+
+    @Step("Заполнение города")
+    public MainPage inputSityName(String value) {
+        inputSity.setValue(value);
+        return this;
+    }
+
+    @Step("Заполнение биографии")
+    public MainPage fillingOutAnArtistsBiography(String value) {
+        inputBiography.setValue(value);
+        return this;
+    }
+
+    @Step("Заполнение имени художника")
+    public MainPage inputNameArtist(String value) {
+        inputArtist.setValue(value);
         return this;
     }
 
@@ -227,10 +279,41 @@ public class MainPage {
         return this;
     }
 
+    @Step("Загрузка картины")
+    public MainPage loadingAPainting() {
+        File imageFile = new File("src/test/resources/images/morningInAPineForest.jpg");
+        fotoProfile.uploadFile(imageFile);
+
+        return this;
+    }
+
+    @Step("Загрузка художника")
+    public MainPage loadingAArtist() {
+        File imageFile = new File("src/test/resources/images/Leonardo_da_Vinci.jpg");
+        fotoArtist.uploadFile(imageFile);
+
+        return this;
+    }
+
+    @Step("Загрузка фото музея")
+    public MainPage loadingAMuseum() {
+        File imageFile = new File("src/test/resources/images/PushkinMuseum.jpg");
+        fotoArtist.uploadFile(imageFile);
+
+        return this;
+    }
+
     @Step("Поиск")
     public MainPage search(String value) {
         inputSearch.setValue(value);
         buttonSearch.click();
+
+        return this;
+    }
+
+    @Step("Ввод названия")
+    public MainPage inputNamePicture(String value) {
+        inputNamePicture.setValue(value);
 
         return this;
     }
@@ -295,6 +378,24 @@ public class MainPage {
     @Step("Получение описания картины с текущей страницы")
     public String getPaintingDescriptionFromCurrentPage() {
         return paintingChack.getText();
+    }
+
+    @Step("Выбор художника Шишкина")
+    public String choiceArtistShishkin() {
+        choiceArtistShishkin.click();
+        return choiceArtistShishkin.getText();
+    }
+
+    @Step("Выбор Третьяковской галереи")
+    public String choiceTyakovGallery() {
+        choicetretyakovGallery.click();
+        return choicetretyakovGallery.getText();
+    }
+
+    @Step("Выбор Белорусии")
+    public String choiceBelarus() {
+        choiceBelarus.click();
+        return choiceBelarus.getText();
     }
 
 }

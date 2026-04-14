@@ -85,4 +85,4 @@ logging:
 rococo-front:
   base-uri: 'http://localhost:8080'
 rococo-auth:
-  base-uri: 'http://localhost:9000'
+  base-uri: 'http://rococo-auth:9000'

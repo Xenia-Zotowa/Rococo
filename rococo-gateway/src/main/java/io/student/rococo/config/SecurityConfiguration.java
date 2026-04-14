@@ -9,12 +9,18 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
-import org.springframework.http.HttpMethod;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
+import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Cookie;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import io.student.rococo.service.cors.CorsCustomizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
@@ -33,14 +39,7 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        //var authHandler = new CsrfTokenRequestAttributeHandler();
-        //authHandler.setCsrfRequestAttributeName("_csrf");
-
         http
-                /*.csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .csrfTokenRequestHandler(authHandler)
-                )*/
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
@@ -50,9 +49,30 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/api/painting/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .bearerTokenResolver(cookieTokenResolver())
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                );
         corsCustomizer.corsCustomizer(http);
         return http.build();
+    }
+
+    @Bean
+    public BearerTokenResolver cookieTokenResolver() {
+        return request -> {
+            if (request instanceof HttpServletRequest) {
+                HttpServletRequest httpRequest = (HttpServletRequest) request;
+                Cookie[] cookies = httpRequest.getCookies();
+                if (cookies != null) {
+                    for (Cookie cookie : cookies) {
+                        if ("access_token_lf".equals(cookie.getName())) {
+                            return cookie.getValue();
+                        }
+                    }
+                }
+            }
+            return new DefaultBearerTokenResolver().resolve(request);
+        };
     }
 
     @Bean

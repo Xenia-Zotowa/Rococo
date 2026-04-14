@@ -9,6 +9,8 @@ import {
 import {prepareModal} from "$lib/helpers/prepareModal";
 import UserForm from "$lib/components/forms/user/UserForm.svelte";
 import type {UserType} from "$lib/types/User";
+import UserDropdown from "$lib/components/user/UserDropdown.svelte";
+import { onMount } from 'svelte';
 
 export let errorTrigger: (message: string) => void;
 export let successTrigger: (message: string) => void;
@@ -49,14 +51,25 @@ const updateProfileCallback = async (result: {
     }
 }
 
-const clickProfileButton = () => {
-    const modal = prepareModal({
-        ref: UserForm,
-        title: "Профиль",
-        callback: updateProfileCallback,
-    });
-    modalStore.trigger(modal);
+let isDropdownOpen = false;
+const toggleDropdown = () => {
+    isDropdownOpen = !isDropdownOpen;
 }
+
+const closeDropdown = () => {
+    isDropdownOpen = false;
+}
+
+onMount(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+        const target = event.target as HTMLElement;
+        if (isDropdownOpen && !target.closest('.avatar-container')) {
+            isDropdownOpen = false;
+        }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+});
 
 </script>
 
@@ -64,16 +77,25 @@ const clickProfileButton = () => {
     <img src={MenuIcon} alt="Иконка меню" class="w-50 h-50 md:hidden" width="50" height="50"/>
 </button>
 <PagesNavigation isBigScreen={true}/>
-<div>
+<div class="relative">
     <LightSwitch rounded="rounded-full" on:click={toggleTheme}/>
-</div>
+</div >
 {#if $sessionStore.isLoading}
     <div class="placeholder-circle w-10" />
 {:else}
     {#if $sessionStore.user}
-        <button type="button" class="btn-icon variant-filled-surface relative" on:click={clickProfileButton}>
-            <Avatar src={$sessionStore.user.avatar} width="w-16" rounded="rounded-full" />
-        </button>
+        <div class="relative avatar-container">
+            <button type="button" class="btn-icon variant-filled-surface relative" on:click={toggleDropdown}>
+                <Avatar src={$sessionStore.user.avatar} width="w-16" rounded="rounded-full" />
+            </button>
+            {#if isDropdownOpen}
+                <UserDropdown
+                    {errorTrigger}
+                    {successTrigger}
+                    on:close={closeDropdown}
+                />
+            {/if}
+        </div>
     {:else}
         <button type="button" class="btn variant-filled-primary" on:click={onLoginClick}>
             Войти

@@ -328,6 +328,24 @@ public class DatabaseHelper {
         }
     }
 
+    @Step("Получение информации по всем Художникам")
+    public List<Map<String, Object>> getAllArtists() {
+        if (databaseType != DatabaseType.GATEWAY) {
+            throw new UnsupportedOperationException("getAllArtists only works with GATEWAY database");
+        }
+        String sql = """
+                SELECT id, name, biography, photo
+                FROM artist
+                ORDER BY name
+                """;
+        try {
+            return jdbcTemplate.queryForList(sql);
+        } catch (Exception e) {
+            System.err.println("Error getting all artists: " + e.getMessage());
+            return List.of();
+        }
+    }
+
     @Step("Получение информации по Музею")
     public Map<String, Object> getMuseumByTitle(String title) {
         if (databaseType != DatabaseType.GATEWAY) {
@@ -360,6 +378,35 @@ public class DatabaseHelper {
         } catch (Exception e) {
             return Map.of();
         }
+    }
+
+    @Step("Удаление картины по ID")
+    public void deletePaintingById(String id) {
+        if (databaseType != DatabaseType.GATEWAY) {
+            throw new UnsupportedOperationException("deletePaintingById only works with GATEWAY database");
+        }
+        String sql = "DELETE FROM painting WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
+    @Step("Удаление художника по ID")
+    public void deleteArtistById(String id) {
+        if (databaseType != DatabaseType.GATEWAY) {
+            throw new UnsupportedOperationException("deleteArtistById only works with GATEWAY database");
+        }
+        String sql = "DELETE FROM artist WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+        System.out.println("✅ Artist deleted with id: " + id);
+    }
+
+    @Step("Удаление музея по ID")
+    public void deleteMuseumById(String id) {
+        if (databaseType != DatabaseType.GATEWAY) {
+            throw new UnsupportedOperationException("deleteMuseumById only works with GATEWAY database");
+        }
+        String sql = "DELETE FROM museum WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+        System.out.println("✅ Museum deleted with id: " + id);
     }
 
     @Step("Получение JdbcTemplate")
