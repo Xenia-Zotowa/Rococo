@@ -57,7 +57,9 @@ public class MainPage {
     private final SelenideElement inputSity = $("input[name=\"city\"]");
     private final SelenideElement editButton = $("button[data-testid=\"edit-museum\"]");
     private final SelenideElement museumEditing = $("a[href=\"/museum/43280d5b-3b78-5453-8380-5f226cb4dd5a\"] .max-w-full");
+    private final SelenideElement luvr = $x("//*[text()=\"Лувр\"]");
     private final SelenideElement convertToBasicLatin = $x("//button[text()=\"Редактировать профиль\"]");
+    private final SelenideElement museumName = $("input[name=\"title\"]");
 
 
     @Step("Переход в форму авторизации")
@@ -209,12 +211,21 @@ public class MainPage {
 
     @Step("Заполнение описания картины")
     public MainPage fillingOutTheDescriptionOfThePainting(String value) {
+        descriptionPicture.clear();
         descriptionPicture.setValue(value);
+        return this;
+    }
+
+    @Step("Изменение названия картины")
+    public MainPage changingTheTitleOfThePainting(String value) {
+        museumName.clear();
+        museumName.setValue(value);
         return this;
     }
 
     @Step("Заполнение города")
     public MainPage inputSityName(String value) {
+        inputSity.clear();
         inputSity.setValue(value);
         return this;
     }
@@ -406,7 +417,7 @@ public class MainPage {
 
     @Step("Редактирование музея")
     public MainPage museumEditingClick() {
-        museumEditing.click();
+        luvr.click();
         return this;
     }
 }

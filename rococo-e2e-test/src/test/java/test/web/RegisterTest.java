@@ -29,7 +29,7 @@ public class RegisterTest {
     private final LoginPage loginPage = new LoginPage();
     private final RegisterPage registerPage = new RegisterPage();
     private final DatabaseHelper authDb = new DatabaseHelper(DatabaseType.AUTH);
-//    private final DatabaseHelper gatewayDb = new DatabaseHelper(DatabaseType.GATEWAY);
+    private final DatabaseHelper gatewayDb = new DatabaseHelper(DatabaseType.GATEWAY);
 
 
     @Test
@@ -37,12 +37,12 @@ public class RegisterTest {
     public void registerNewUser() {
 
         authDb.clearDatabase();
-//            gatewayDb.clearDatabase();
+            gatewayDb.clearDatabase();
         String username = "admin";
         String password = "123";
 
         assertThat(authDb.userExists(username)).isFalse();
-//            assertThat(gatewayDb.userExists(username)).isFalse();
+            assertThat(gatewayDb.userExists(username)).isFalse();
 
         mainPage.switchingToTheAuthorizationForm();
         sleep(1000);
@@ -51,7 +51,7 @@ public class RegisterTest {
         registerPage.registerUser(username, password, password)
                 .checkRegister();
         assertThat(authDb.userExists(username)).isTrue();
-//            assertThat(gatewayDb.userExists(username)).isTrue();
+            assertThat(gatewayDb.userExists(username)).isTrue();
 
         closeWebDriver();
 

@@ -14,6 +14,9 @@ import java.util.Map;
 
 import static com.codeborne.selenide.Selenide.sleep;
 import static org.assertj.core.api.Assertions.assertThat;
+import com.github.javafaker.Faker;
+
+
 
 @WebTest
 public class WithAnAuthorizedUserTest {
@@ -129,53 +132,49 @@ public class WithAnAuthorizedUserTest {
     }
 
 
-//    @Test
-//    @DisplayName("Редактирование информации по музею")
-//    public void artistMuseum() {
-//        String museumTitle = "Пушкинский музей";
-//        String museumDescription = "Государственный музей изобразительных искусств имени А. С. Пушкина (ГМИИ им. А. С. Пушкина, Пушкинский музей) — один из крупнейших в России музеев мирового искусства. Расположен в Москве на улице Волхонка, 12.";
-//        String testMuseumId = null;
-//        String cityName = "Москва";
-//        try {
-//
-//            mainPage.switchingToTheAuthorizationForm();
-//            sleep(1000);
-//            loginPage.loginTest("admin", "123");
-//            mainPage.checkBackHome()
-//                    .museumSectionFoto()
-//                    .museumEditingClick()
-//                    .editButtonClick()
-//                    .changingTheMuseumPhoto();
-//
-//            sleep(2000);
-//
-//            Map<String, Object> dbMuseum = gatewayDb.getMuseumByTitle(museumTitle);
-//
-//            assertThat(dbMuseum)
-//                    .as("Музей '%s' не найден в базе данных", museumTitle)
-//                    .isNotEmpty();
-//
-//            assertThat(dbMuseum.get("title"))
-//                    .as("Название музея не совпадает")
-//                    .isEqualTo(museumTitle);
-//
-//            assertThat(dbMuseum.get("description"))
-//                    .as("Описание музея не совпадает")
-//                    .isEqualTo(museumDescription);
-//
-//            assertThat(dbMuseum.get("geo"))
-//                    .as("Город музея не совпадает")
-//                    .isEqualTo(cityName);
-//
-//            testMuseumId = (String) dbMuseum.get("id");
-//
-//        } finally {
-//
-//            if (testMuseumId != null) {
-//                gatewayDb.deleteMuseumById(testMuseumId);
-//            }
-//        }
-//    }
+    @Test
+    @DisplayName("Редактирование информации по музею")
+    public void museumChange() {
+        Faker faker = new Faker();
+        String museumTitle = "Лувр";
+        String museumDescription = faker.company().name() + " - " + faker.address().city();
+        String cityName = faker.address().city();
+
+        mainPage.switchingToTheAuthorizationForm();
+        sleep(1000);
+        loginPage.loginTest("admin", "123");
+        mainPage.checkBackHome()
+                .museumSectionFoto()
+                .museumEditingClick()
+                .editButtonClick()
+                .changingTheMuseumPhoto()
+                .changingTheTitleOfThePainting(museumTitle)
+                .inputSityName(cityName)
+                .fillingOutTheDescriptionOfThePainting(museumDescription)
+                .updateYourProfile();
+
+        sleep(2000);
+
+        Map<String, Object> dbMuseum = gatewayDb.getMuseumByTitle(museumTitle);
+
+        assertThat(dbMuseum)
+                .as("Музей '%s' не найден в базе данных", museumTitle)
+                .isNotEmpty();
+
+        assertThat(dbMuseum.get("title"))
+                .as("Название музея не совпадает")
+                .isEqualTo(museumTitle);
+
+        assertThat(dbMuseum.get("description"))
+                .as("Описание музея не совпадает")
+                .isEqualTo(museumDescription);
+
+        assertThat(dbMuseum.get("geo"))
+                .as("Город музея не совпадает")
+                .isEqualTo(cityName);
+
+    }
+
 
     @Test
     @DisplayName("Проверка разлогинивания")
@@ -195,10 +194,10 @@ public class WithAnAuthorizedUserTest {
         String username = "admin";
         String newFirstname = "Ivan";
         String newLastname = "Ivanov";
-//        assertThat(gatewayDb.userExists(username)).isTrue();
-//        Map<String, Object> userBefore = gatewayDb.getUserByUsername(username);
-//        System.out.println("Before update - Firstname: " + userBefore.get("firstname") +
-//                ", Lastname: " + userBefore.get("lastname"));
+        assertThat(gatewayDb.userExists(username)).isTrue();
+        Map<String, Object> userBefore = gatewayDb.getUserByUsername(username);
+        System.out.println("Before update - Firstname: " + userBefore.get("firstname") +
+                ", Lastname: " + userBefore.get("lastname"));
         mainPage.switchingToTheAuthorizationForm();
         sleep(1000);
         loginPage.loginTest(username, "123");
@@ -208,11 +207,11 @@ public class WithAnAuthorizedUserTest {
                 .updateYourFotoProfile()
                 .updateYourProfile();
         sleep(2000);
-//        Map<String, Object> userAfter = gatewayDb.getUserByUsername(username);
-//        String actualFirstname = (String) userAfter.get("firstname");
-//        String actualLastname = (String) userAfter.get("lastname");
-//        assertThat(actualFirstname).isEqualTo(newFirstname);
-//        assertThat(actualLastname).isEqualTo(newLastname);
+        Map<String, Object> userAfter = gatewayDb.getUserByUsername(username);
+        String actualFirstname = (String) userAfter.get("firstname");
+        String actualLastname = (String) userAfter.get("lastname");
+        assertThat(actualFirstname).isEqualTo(newFirstname);
+        assertThat(actualLastname).isEqualTo(newLastname);
     }
 
 }
