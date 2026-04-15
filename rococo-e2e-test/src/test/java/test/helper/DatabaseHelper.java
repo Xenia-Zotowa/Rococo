@@ -2,20 +2,21 @@ package test.helper;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import io.qameta.allure.Attachment;
 import io.qameta.allure.Step;
+import lombok.Getter;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class DatabaseHelper {
 
     private final JdbcTemplate jdbcTemplate;
+    @Getter
     private final DatabaseType databaseType;
-
 
     public DatabaseHelper(DatabaseType databaseType) {
         this.databaseType = databaseType;
@@ -75,7 +76,9 @@ public class DatabaseHelper {
                 """;
 
         try {
+            logSql(createUserTable);
             jdbcTemplate.execute(createUserTable);
+            logSql(createAuthorityTable);
             jdbcTemplate.execute(createAuthorityTable);
             System.out.println("Auth tables created successfully");
         } catch (Exception e) {
@@ -83,6 +86,7 @@ public class DatabaseHelper {
         }
     }
 
+    @Step("Создание таблиц Gateway")
     private void createGatewayTables() {
         String createUserTable = """
                     CREATE TABLE IF NOT EXISTS `user` (
@@ -141,10 +145,15 @@ public class DatabaseHelper {
                 """;
 
         try {
+            logSql(createUserTable);
             jdbcTemplate.execute(createUserTable);
+            logSql(createCountryTable);
             jdbcTemplate.execute(createCountryTable);
+            logSql(createMuseumTable);
             jdbcTemplate.execute(createMuseumTable);
+            logSql(createArtistTable);
             jdbcTemplate.execute(createArtistTable);
+            logSql(createPaintingTable);
             jdbcTemplate.execute(createPaintingTable);
             System.out.println("Gateway tables created successfully");
         } catch (Exception e) {
@@ -156,18 +165,42 @@ public class DatabaseHelper {
     public void clearDatabase() {
         try {
             if (databaseType == DatabaseType.AUTH) {
-                jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 0");
-                jdbcTemplate.execute("TRUNCATE TABLE authority");
-                jdbcTemplate.execute("TRUNCATE TABLE `user`");
-                jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 1");
+                String sql1 = "SET FOREIGN_KEY_CHECKS = 0";
+                String sql2 = "TRUNCATE TABLE authority";
+                String sql3 = "TRUNCATE TABLE `user`";
+                String sql4 = "SET FOREIGN_KEY_CHECKS = 1";
+
+                logSql(sql1);
+                jdbcTemplate.execute(sql1);
+                logSql(sql2);
+                jdbcTemplate.execute(sql2);
+                logSql(sql3);
+                jdbcTemplate.execute(sql3);
+                logSql(sql4);
+                jdbcTemplate.execute(sql4);
             } else if (databaseType == DatabaseType.GATEWAY) {
-                jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 0");
-                jdbcTemplate.execute("TRUNCATE TABLE painting");
-                jdbcTemplate.execute("TRUNCATE TABLE museum");
-                jdbcTemplate.execute("TRUNCATE TABLE artist");
-                jdbcTemplate.execute("TRUNCATE TABLE country");
-                jdbcTemplate.execute("TRUNCATE TABLE `user`");
-                jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 1");
+                String sql1 = "SET FOREIGN_KEY_CHECKS = 0";
+                String sql2 = "TRUNCATE TABLE painting";
+                String sql3 = "TRUNCATE TABLE museum";
+                String sql4 = "TRUNCATE TABLE artist";
+                String sql5 = "TRUNCATE TABLE country";
+                String sql6 = "TRUNCATE TABLE `user`";
+                String sql7 = "SET FOREIGN_KEY_CHECKS = 1";
+
+                logSql(sql1);
+                jdbcTemplate.execute(sql1);
+                logSql(sql2);
+                jdbcTemplate.execute(sql2);
+                logSql(sql3);
+                jdbcTemplate.execute(sql3);
+                logSql(sql4);
+                jdbcTemplate.execute(sql4);
+                logSql(sql5);
+                jdbcTemplate.execute(sql5);
+                logSql(sql6);
+                jdbcTemplate.execute(sql6);
+                logSql(sql7);
+                jdbcTemplate.execute(sql7);
             }
             System.out.println("Database cleared successfully: " + databaseType.getDatabaseName());
         } catch (Exception e) {
@@ -192,29 +225,29 @@ public class DatabaseHelper {
                         WHERE username = ?
                     """;
         }
+        logSql(sql, username);
         return jdbcTemplate.queryForMap(sql, username);
     }
-
-
 
     @Step("Проверка существования пользователя")
     public boolean userExists(String username) {
         String sql = "SELECT COUNT(*) FROM `user` WHERE username = ?";
+        logSql(sql, username);
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, username);
         return count != null && count > 0;
     }
 
-
-    @Step("Получение информации по Художнику")
+    @Step("Получение информации по Художнику по имени (старый метод)")
     public Map<String, Object> getArtistByName(String name) {
         if (databaseType != DatabaseType.GATEWAY) {
             throw new UnsupportedOperationException("getArtistByName only works with GATEWAY database");
         }
         String sql = """
                     SELECT biography
-                     FROM `artist` 
-                    WHERE `name` = ?
+                    FROM artist 
+                    WHERE name = ?
                 """;
+        logSql(sql, name);
         try {
             return jdbcTemplate.queryForMap(sql, name);
         } catch (Exception e) {
@@ -222,16 +255,17 @@ public class DatabaseHelper {
         }
     }
 
-    @Step("Получение информации по Музею по названию")
+    @Step("Получение информации по Музею по названию (полная информация)")
     public Map<String, Object> getMuseumByName(String title) {
         if (databaseType != DatabaseType.GATEWAY) {
-            throw new UnsupportedOperationException("getMuseumByTitle only works with GATEWAY database");
+            throw new UnsupportedOperationException("getMuseumByName only works with GATEWAY database");
         }
         String sql = """
-                SELECT id, title, description, geo, photo
+                SELECT BIN_TO_UUID(id) as id, title, description, city, photo
                 FROM museum 
                 WHERE title = ?
                 """;
+        logSql(sql, title);
         try {
             return jdbcTemplate.queryForMap(sql, title);
         } catch (EmptyResultDataAccessException e) {
@@ -249,10 +283,11 @@ public class DatabaseHelper {
             throw new UnsupportedOperationException("getAllArtists only works with GATEWAY database");
         }
         String sql = """
-                SELECT id, name, biography, photo
+                SELECT BIN_TO_UUID(id) as id, name, biography, photo
                 FROM artist
                 ORDER BY name
                 """;
+        logSql(sql);
         try {
             return jdbcTemplate.queryForList(sql);
         } catch (Exception e) {
@@ -261,16 +296,17 @@ public class DatabaseHelper {
         }
     }
 
-    @Step("Получение информации по Музею")
+    @Step("Получение описания музея по названию")
     public Map<String, Object> getMuseumByTitle(String title) {
         if (databaseType != DatabaseType.GATEWAY) {
-            throw new UnsupportedOperationException("getArtistByName only works with GATEWAY database");
+            throw new UnsupportedOperationException("getMuseumByTitle only works with GATEWAY database");
         }
         String sql = """
                     SELECT description
-                     FROM `museum` 
-                    WHERE `title` = ?
+                    FROM museum 
+                    WHERE title = ?
                 """;
+        logSql(sql, title);
         try {
             return jdbcTemplate.queryForMap(sql, title);
         } catch (Exception e) {
@@ -278,16 +314,17 @@ public class DatabaseHelper {
         }
     }
 
-    @Step("Получение информации по Художнику по имени")
+    @Step("Получение информации по Художнику по имени (полная информация)")
     public Map<String, Object> getArtistByN(String name) {
         if (databaseType != DatabaseType.GATEWAY) {
-            throw new UnsupportedOperationException("getArtistByName only works with GATEWAY database");
+            throw new UnsupportedOperationException("getArtistByN only works with GATEWAY database");
         }
         String sql = """
-                SELECT id, name, biography, photo
+                SELECT BIN_TO_UUID(id) as id, name, biography, photo
                 FROM artist 
                 WHERE name = ?
                 """;
+        logSql(sql, name);
         try {
             return jdbcTemplate.queryForMap(sql, name);
         } catch (EmptyResultDataAccessException e) {
@@ -302,13 +339,14 @@ public class DatabaseHelper {
     @Step("Получение информации по Картине")
     public Map<String, Object> getPaintingByTitle(String title) {
         if (databaseType != DatabaseType.GATEWAY) {
-            throw new UnsupportedOperationException("getArtistByName only works with GATEWAY database");
+            throw new UnsupportedOperationException("getPaintingByTitle only works with GATEWAY database");
         }
         String sql = """
                     SELECT description
-                     FROM `painting` 
-                    WHERE `title` = ?
+                    FROM painting 
+                    WHERE title = ?
                 """;
+        logSql(sql, title);
         try {
             return jdbcTemplate.queryForMap(sql, title);
         } catch (Exception e) {
@@ -321,8 +359,10 @@ public class DatabaseHelper {
         if (databaseType != DatabaseType.GATEWAY) {
             throw new UnsupportedOperationException("deletePaintingById only works with GATEWAY database");
         }
-        String sql = "DELETE FROM painting WHERE id = ?";
+        String sql = "DELETE FROM painting WHERE id = UUID_TO_BIN(?)";
+        logSql(sql, id);
         jdbcTemplate.update(sql, id);
+        System.out.println("✅ Painting deleted with id: " + id);
     }
 
     @Step("Удаление художника по ID")
@@ -330,7 +370,8 @@ public class DatabaseHelper {
         if (databaseType != DatabaseType.GATEWAY) {
             throw new UnsupportedOperationException("deleteArtistById only works with GATEWAY database");
         }
-        String sql = "DELETE FROM artist WHERE id = ?";
+        String sql = "DELETE FROM artist WHERE id = UUID_TO_BIN(?)";
+        logSql(sql, id);
         jdbcTemplate.update(sql, id);
         System.out.println("✅ Artist deleted with id: " + id);
     }
@@ -340,9 +381,25 @@ public class DatabaseHelper {
         if (databaseType != DatabaseType.GATEWAY) {
             throw new UnsupportedOperationException("deleteMuseumById only works with GATEWAY database");
         }
-        String sql = "DELETE FROM museum WHERE id = ?";
+        String sql = "DELETE FROM museum WHERE id = UUID_TO_BIN(?)";
+        logSql(sql, id);
         jdbcTemplate.update(sql, id);
         System.out.println("✅ Museum deleted with id: " + id);
+    }
+
+    @Step("Получение всех музеев")
+    public List<Map<String, Object>> getAllMuseums() {
+        if (databaseType != DatabaseType.GATEWAY) {
+            throw new UnsupportedOperationException("getAllMuseums only works with GATEWAY database");
+        }
+        String sql = "SELECT BIN_TO_UUID(id) as id, title, description, city FROM museum";
+        logSql(sql);
+        try {
+            return jdbcTemplate.queryForList(sql);
+        } catch (Exception e) {
+            System.err.println("Error getting all museums: " + e.getMessage());
+            return List.of();
+        }
     }
 
     @Step("Получение JdbcTemplate")
@@ -350,8 +407,42 @@ public class DatabaseHelper {
         return jdbcTemplate;
     }
 
+    @Step("Логирование SQL запроса")
+    private void logSql(String sql, Object... params) {
+        String formattedSql = sql;
+        for (Object param : params) {
+            if (param != null) {
+                formattedSql = formattedSql.replaceFirst("\\?", "'" + param + "'");
+            } else {
+                formattedSql = formattedSql.replaceFirst("\\?", "NULL");
+            }
+        }
 
-    public DatabaseType getDatabaseType() {
-        return databaseType;
+        System.out.println("========================================");
+        System.out.println("Database: " + databaseType.getDatabaseName());
+        System.out.println("SQL Query: " + formattedSql);
+        System.out.println("========================================");
+
+        attachSqlLog(formattedSql);
+    }
+
+    @Attachment(value = "SQL Query", type = "text/html")
+    public static String attachSqlLog(String sql) {
+        return "<html>\n" +
+                "<head>\n" +
+                "    <meta http-equiv=\"content-type\" content=\"text/html; charset = UTF-8\">\n" +
+                "    <link type=\"text/css\" href=\"https://yandex.st/highlightjs/8.0/styles/github.min.css\" rel=\"stylesheet\"/>\n" +
+                "    <script type=\"text/javascript\" src=\"https://yandex.st/highlightjs/8.0/highlight.min.js\"></script>\n" +
+                "    <script type=\"text/javascript\" src=\"https://yandex.st/highlightjs/8.0/languages/sql.min.js\"></script>\n" +
+                "    <script type=\"text/javascript\">hljs.initHighlightingOnLoad();</script>\n" +
+                "    <style>pre { white-space: pre-wrap; }</style>\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "<h5>SQL Query</h5>\n" +
+                "<div>\n" +
+                "    <pre><code>" + sql + "</code></pre>\n" +
+                "</div>\n" +
+                "</body>\n" +
+                "</html>";
     }
 }
