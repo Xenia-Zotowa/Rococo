@@ -15,3 +15,9 @@
 БД:
 - 3306 - БД авторизации
 - 3307 - БД музея (пока пустая, потом тут будут данные GateWay)
+
+WEB-тесты находятся:
+- rococo-e2e-test/src/test/java/test/web
+
+REST-тесты находятся:
+- rococo-e2e-test/src/test/java/test/rest

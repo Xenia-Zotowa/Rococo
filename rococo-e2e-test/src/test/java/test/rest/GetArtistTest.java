@@ -60,4 +60,17 @@ public class GetArtistTest {
                     .isEqualTo(dbArtist.get("biography"));
         }
     }
+
+    @Test
+    void getArtistTestError() {
+        Response response = given()
+                .log().all()
+                .get("/artis")
+                .then()
+                .log().all()
+                .statusCode(401)
+                .extract().response();
+
+
+    }
 }
