@@ -3,6 +3,7 @@ package test.rest;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import test.helper.DatabaseHelper;
 import test.helper.DatabaseType;
@@ -25,6 +26,7 @@ public class GetArtistTest {
     }
 
     @Test
+    @DisplayName("Проверка получения информации по художникам")
     void getArtistTest() {
         Response response = given()
                 .log().all()
@@ -62,6 +64,7 @@ public class GetArtistTest {
     }
 
     @Test
+    @DisplayName("Проверка получения кода ответа 401")
     void getArtistTestError() {
         Response response = given()
                 .log().all()
@@ -70,7 +73,5 @@ public class GetArtistTest {
                 .log().all()
                 .statusCode(401)
                 .extract().response();
-
-
     }
 }

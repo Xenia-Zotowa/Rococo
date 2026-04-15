@@ -542,4 +542,28 @@ public class DatabaseHelper {
             createGatewayUser(username, firstname, lastname);
         }
     }
+
+    @Step("Получение информации по всем картинам")
+    public List<Map<String, Object>> getAllPaintings() {
+        if (databaseType != DatabaseType.GATEWAY) {
+            throw new UnsupportedOperationException("getAllPaintings only works with GATEWAY database");
+        }
+        String sql = """
+        SELECT 
+            BIN_TO_UUID(id) as id,
+            title, 
+            description,
+            BIN_TO_UUID(artist_id) as artist_id,
+            BIN_TO_UUID(museum_id) as museum_id
+        FROM painting
+        ORDER BY title
+        """;
+        logSql(sql);
+        try {
+            return jdbcTemplate.queryForList(sql);
+        } catch (Exception e) {
+            System.err.println("Error getting all paintings: " + e.getMessage());
+            return List.of();
+        }
+    }
 }
