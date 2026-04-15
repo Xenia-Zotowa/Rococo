@@ -5,6 +5,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.qameta.allure.Attachment;
 import io.qameta.allure.Step;
 import lombok.Getter;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -444,5 +445,101 @@ public class DatabaseHelper {
                 "</div>\n" +
                 "</body>\n" +
                 "</html>";
+    }
+
+    @Step("Создание пользователя в AUTH базе данных")
+    public void createAuthUser(String username, String password) {
+        if (databaseType != DatabaseType.AUTH) {
+            throw new UnsupportedOperationException("createAuthUser only works with AUTH database");
+        }
+
+        // Проверяем, существует ли пользователь
+        if (userExists(username)) {
+            System.out.println("User already exists in AUTH DB: " + username);
+            return;
+        }
+
+        String sql = """
+                INSERT INTO `user` (
+                    id, 
+                    username, 
+                    password, 
+                    enabled, 
+                    account_non_expired, 
+                    account_non_locked, 
+                    credentials_non_expired
+                ) VALUES (
+                    UUID_TO_BIN(UUID()), 
+                    ?, 
+                    ?, 
+                    true, 
+                    true, 
+                    true, 
+                    true
+                )
+                """;
+
+        try {
+            logSql(sql, username, password);
+            jdbcTemplate.update(sql, username, password);
+            System.out.println("✅ User created in AUTH DB: " + username);
+        } catch (DuplicateKeyException e) {
+            System.out.println("User already exists: " + username);
+        } catch (Exception e) {
+            System.err.println("Error creating user in AUTH DB: " + e.getMessage());
+            throw new RuntimeException("Failed to create user in AUTH DB", e);
+        }
+    }
+
+    @Step("Создание пользователя в GATEWAY базе данных")
+    public void createGatewayUser(String username, String firstname, String lastname) {
+        if (databaseType != DatabaseType.GATEWAY) {
+            throw new UnsupportedOperationException("createGatewayUser only works with GATEWAY database");
+        }
+
+        // Проверяем, существует ли пользователь
+        if (userExists(username)) {
+            System.out.println("User already exists in GATEWAY DB: " + username);
+            return;
+        }
+
+        String sql = """
+                INSERT INTO `user` (
+                    id, 
+                    username, 
+                    firstname, 
+                    lastname, 
+                    avatar
+                ) VALUES (
+                    UUID_TO_BIN(UUID()), 
+                    ?, 
+                    ?, 
+                    ?, 
+                    NULL
+                )
+                """;
+
+        try {
+            logSql(sql, username, firstname, lastname);
+            jdbcTemplate.update(sql, username, firstname, lastname);
+            System.out.println("✅ User created in GATEWAY DB: " + username);
+        } catch (DuplicateKeyException e) {
+            System.out.println("User already exists: " + username);
+        } catch (Exception e) {
+            System.err.println("Error creating user in GATEWAY DB: " + e.getMessage());
+            throw new RuntimeException("Failed to create user in GATEWAY DB", e);
+        }
+    }
+
+    @Step("Создание пользователя в обеих базах данных")
+    public void createUserInBothDatabases(String username, String password, String firstname, String lastname) {
+        // Создаём в AUTH базе
+        if (databaseType == DatabaseType.AUTH) {
+            createAuthUser(username, password);
+        }
+        // Создаём в GATEWAY базе
+        else if (databaseType == DatabaseType.GATEWAY) {
+            createGatewayUser(username, firstname, lastname);
+        }
     }
 }

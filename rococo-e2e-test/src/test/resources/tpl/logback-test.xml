@@ -1,0 +1,22 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Allure Step логирование -->
+    <logger name="io.qameta.allure" level="DEBUG"/>
+    <logger name="io.qameta.allure.Step" level="DEBUG"/>
+
+    <!-- Selenide логирование -->
+    <logger name="com.codeborne.selenide" level="DEBUG"/>
+
+    <!-- Ваши шаги -->
+    <logger name="page" level="DEBUG"/>
+    <logger name="test.helper" level="DEBUG"/>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
