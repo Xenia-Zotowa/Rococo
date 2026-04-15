@@ -24,6 +24,8 @@ public class WithAnAuthorizedUserTest {
     private final MainPage mainPage = Selenide.open(CFG.spendUrl(), MainPage.class);
     private final LoginPage loginPage = new LoginPage();
     private final DatabaseHelper gatewayDb = new DatabaseHelper(DatabaseType.GATEWAY);
+    private final String login = "admin";
+    private final String password = "123";
 
 
     @Test
@@ -34,7 +36,7 @@ public class WithAnAuthorizedUserTest {
 
         mainPage.switchingToTheAuthorizationForm();
         sleep(1000);
-        loginPage.loginTest("admin", "123");
+        loginPage.loginTest(login, password);
         mainPage.checkBackHome()
                 .paintingSection()
                 .addAPicture()
@@ -62,7 +64,7 @@ public class WithAnAuthorizedUserTest {
 
         mainPage.switchingToTheAuthorizationForm();
         sleep(1000);
-        loginPage.loginTest("admin", "123");
+        loginPage.loginTest(login, password);
         mainPage.checkBackHome()
                 .artistSectionFoto()
                 .addAArtist()
@@ -98,7 +100,7 @@ public class WithAnAuthorizedUserTest {
 
         mainPage.switchingToTheAuthorizationForm();
         sleep(1000);
-        loginPage.loginTest("admin", "123");
+        loginPage.loginTest(login, password);
         mainPage.checkBackHome()
                 .museumSectionFoto()
                 .AddAMuseum()
@@ -142,7 +144,7 @@ public class WithAnAuthorizedUserTest {
 
         mainPage.switchingToTheAuthorizationForm();
         sleep(1000);
-        loginPage.loginTest("admin", "123");
+        loginPage.loginTest(login, password);
         mainPage.checkBackHome()
                 .museumSectionFoto()
                 .museumEditingClick()
@@ -181,7 +183,7 @@ public class WithAnAuthorizedUserTest {
     public void cheklogOut() {
         mainPage.switchingToTheAuthorizationForm();
         sleep(1000);
-        loginPage.loginTest("admin", "123");
+        loginPage.loginTest(login, password);
         mainPage.checkBackHome()
                 .logOut()
                 .сheckingTheVisibilityOfTheLoginButton();
@@ -191,23 +193,23 @@ public class WithAnAuthorizedUserTest {
     @Test
     @DisplayName("Редактирование профиля")
     public void profileEditing() {
-        String username = "admin";
+
         String newFirstname = "Ivan";
         String newLastname = "Ivanov";
-        assertThat(gatewayDb.userExists(username)).isTrue();
-        Map<String, Object> userBefore = gatewayDb.getUserByUsername(username);
+        assertThat(gatewayDb.userExists(login)).isTrue();
+        Map<String, Object> userBefore = gatewayDb.getUserByUsername(login);
         System.out.println("Before update - Firstname: " + userBefore.get("firstname") +
                 ", Lastname: " + userBefore.get("lastname"));
         mainPage.switchingToTheAuthorizationForm();
         sleep(1000);
-        loginPage.loginTest(username, "123");
+        loginPage.loginTest(login, password);
         mainPage.checkBackHome()
                 .goingToTheUserProfile()
                 .changingTheUserFirstAndLastName(newFirstname, newLastname)
                 .updateYourFotoProfile()
                 .updateYourProfile();
         sleep(2000);
-        Map<String, Object> userAfter = gatewayDb.getUserByUsername(username);
+        Map<String, Object> userAfter = gatewayDb.getUserByUsername(login);
         String actualFirstname = (String) userAfter.get("firstname");
         String actualLastname = (String) userAfter.get("lastname");
         assertThat(actualFirstname).isEqualTo(newFirstname);
