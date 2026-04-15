@@ -12,7 +12,6 @@ public record RegistrationForm(
         @JsonProperty("passwordSubmit")
         String passwordSubmit
 ) {
-    // Конструктор для удобства, если нужно передать только username и password
     public RegistrationForm(String username, String password) {
         this(username, password, password);
     }

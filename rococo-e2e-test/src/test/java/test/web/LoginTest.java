@@ -5,7 +5,6 @@ import com.codeborne.selenide.logevents.SelenideLogger;
 import config.Config;
 import io.qameta.allure.selenide.AllureSelenide;
 import jupiter.annotation.meta.WebTest;
-import model.UserJson;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -1,9 +1,7 @@
 package service;
 
-import com.codeborne.selenide.Condition;
-import org.openqa.selenium.Cookie;
-
-import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.open;
 
 public class UITestUserHelper {
 

@@ -2,6 +2,7 @@ package test.web;
 
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.logevents.SelenideLogger;
+import com.github.javafaker.Faker;
 import config.Config;
 import io.qameta.allure.selenide.AllureSelenide;
 import jupiter.annotation.meta.WebTest;
@@ -20,8 +21,6 @@ import java.util.UUID;
 
 import static com.codeborne.selenide.Selenide.sleep;
 import static org.assertj.core.api.Assertions.assertThat;
-
-import com.github.javafaker.Faker;
 
 @WebTest
 public class WithAnAuthorizedUserTest {
@@ -82,7 +81,7 @@ public class WithAnAuthorizedUserTest {
 
     @Test
     @DisplayName("Добавление художника")
-        public void artistEditing() {
+    public void artistEditing() {
         String artistName = "Леонардо да Винчи";
         String artistBiography = "Величайший итальянский художник, ученый и изобретатель эпохи Возрождения, ставший символом «универсального человека». Он создал такие шедевры, как «Мона Лиза» и «Тайная вечеря», опередил время своими чертежами летательных аппаратов и исследованиями в анатомии. Родился в Винчи, обучался во Флоренции у Верроккьо.";
         mainPage.switchingToTheAuthorizationForm();
@@ -153,7 +152,7 @@ public class WithAnAuthorizedUserTest {
 
     @Test
     @DisplayName("Редактирование информации по музею")
-        public void museumChange() {
+    public void museumChange() {
         Faker faker = new Faker();
         String museumTitle = "Лувр";
         String museumDescription = faker.company().name() + " - " + faker.address().city();
@@ -205,7 +204,7 @@ public class WithAnAuthorizedUserTest {
 
     @Test
     @DisplayName("Редактирование профиля")
-        public void profileEditing() {
+    public void profileEditing() {
         String newFirstname = "Ivan";
         String newLastname = "Ivanov";
         assertThat(gatewayDb.userExists(TEST_USERNAME)).isTrue();

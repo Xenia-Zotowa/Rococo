@@ -5,7 +5,6 @@ import com.codeborne.selenide.logevents.SelenideLogger;
 import config.Config;
 import io.qameta.allure.selenide.AllureSelenide;
 import jupiter.annotation.meta.WebTest;
-import jupiter.utils.TestUserUtil;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RegisterTest {
 
     private final Config CFG = Config.getInstance();
-    private final String randomUsername = "user_" + UUID.randomUUID().toString().substring(0, 8);
+    private final String randomUsername = "admin_" + UUID.randomUUID().toString().substring(0, 8);
     private final MainPage mainPage = Selenide.open(CFG.spendUrl(), MainPage.class);
     private final LoginPage loginPage = new LoginPage();
     private final RegisterPage registerPage = new RegisterPage();
@@ -64,31 +63,31 @@ public class RegisterTest {
     @Test
     @DisplayName("Регистрация нового пользователя")
     public void registerNewUser() {
-        String username = "admin";
+
         String password = "123";
         authDb.clearDatabase();
-        boolean authUserExists = authDb.userExists(username);
-        boolean gatewayUserExists = gatewayDb.userExists(username);
-        logDatabaseCheck("AUTH", "Check before registration", username, authUserExists);
-        logDatabaseCheck("GATEWAY", "Check before registration", username, gatewayUserExists);
+        boolean authUserExists = authDb.userExists(randomUsername);
+        boolean gatewayUserExists = gatewayDb.userExists(randomUsername);
+        logDatabaseCheck("AUTH", "Check before registration", randomUsername, authUserExists);
+        logDatabaseCheck("GATEWAY", "Check before registration", randomUsername, gatewayUserExists);
         mainPage.switchingToTheAuthorizationForm();
         sleep(1000);
         loginPage.switchingToTheAuthorizationForm();
         sleep(1000);
-        registerPage.registerUser(username, password, password)
+        registerPage.registerUser(randomUsername, password, password)
                 .checkRegister();
         sleep(2000);
-        authUserExists = authDb.userExists(username);
-        gatewayUserExists = gatewayDb.userExists(username);
+        authUserExists = authDb.userExists(randomUsername);
+        gatewayUserExists = gatewayDb.userExists(randomUsername);
         assertThat(authUserExists).isTrue();
         assertThat(gatewayUserExists).isTrue();
         if (authUserExists) {
-            var userData = authDb.getUserByUsername(username);
+            var userData = authDb.getUserByUsername(randomUsername);
             System.out.println("   AUTH DB - Username: " + userData.get("username"));
             System.out.println("   AUTH DB - Enabled: " + userData.get("enabled"));
         }
         if (gatewayUserExists) {
-            var userData = gatewayDb.getUserByUsername(username);
+            var userData = gatewayDb.getUserByUsername(randomUsername);
             System.out.println("   GATEWAY DB - Username: " + userData.get("username"));
             System.out.println("   GATEWAY DB - Firstname: " + userData.get("firstname"));
             System.out.println("   GATEWAY DB - Lastname: " + userData.get("lastname"));
