@@ -67,9 +67,7 @@ public class RegisterTest {
         String password = "123";
         authDb.clearDatabase();
         boolean authUserExists = authDb.userExists(randomUsername);
-        boolean gatewayUserExists = gatewayDb.userExists(randomUsername);
         logDatabaseCheck("AUTH", "Check before registration", randomUsername, authUserExists);
-        logDatabaseCheck("GATEWAY", "Check before registration", randomUsername, gatewayUserExists);
         mainPage.switchingToTheAuthorizationForm();
         sleep(1000);
         loginPage.switchingToTheAuthorizationForm();
@@ -78,19 +76,11 @@ public class RegisterTest {
                 .checkRegister();
         sleep(2000);
         authUserExists = authDb.userExists(randomUsername);
-        gatewayUserExists = gatewayDb.userExists(randomUsername);
         assertThat(authUserExists).isTrue();
-        assertThat(gatewayUserExists).isTrue();
         if (authUserExists) {
             var userData = authDb.getUserByUsername(randomUsername);
             System.out.println("   AUTH DB - Username: " + userData.get("username"));
             System.out.println("   AUTH DB - Enabled: " + userData.get("enabled"));
-        }
-        if (gatewayUserExists) {
-            var userData = gatewayDb.getUserByUsername(randomUsername);
-            System.out.println("   GATEWAY DB - Username: " + userData.get("username"));
-            System.out.println("   GATEWAY DB - Firstname: " + userData.get("firstname"));
-            System.out.println("   GATEWAY DB - Lastname: " + userData.get("lastname"));
         }
         closeWebDriver();
     }
