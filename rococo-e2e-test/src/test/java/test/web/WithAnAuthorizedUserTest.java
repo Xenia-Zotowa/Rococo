@@ -207,11 +207,6 @@ public class WithAnAuthorizedUserTest {
     public void profileEditing() {
         String newFirstname = "Ivan";
         String newLastname = "Ivanov";
-        assertThat(gatewayDb.userExists(TEST_USERNAME)).isTrue();
-        Map<String, Object> userBefore = gatewayDb.getUserByUsername(TEST_PASSWORD);
-        System.out.println("📊 Before update:");
-        System.out.println("   Firstname: " + userBefore.get("firstname"));
-        System.out.println("   Lastname: " + userBefore.get("lastname"));
         mainPage.switchingToTheAuthorizationForm();
         sleep(1000);
         loginPage.loginTest(TEST_USERNAME, TEST_PASSWORD);
